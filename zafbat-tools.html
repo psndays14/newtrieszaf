@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZAF BAT · Outils</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#06402B;--gold:#D3A357;--dark:#141414;--gray:#6B7280;--lgray:#9CA3AF;--ivory:#F7F5F0;--border:#E4DDD3;--r:14px;--shadow:0 8px 24px rgba(20,20,20,.08)}
+body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--dark);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{cursor:pointer;font-family:'Jost',sans-serif}
+input,textarea,select{font-family:'Jost',sans-serif}
+.hidden{display:none!important}
+
+/* TOPBAR */
+.topbar{background:var(--dark);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:white;letter-spacing:.5px}
+.logo span{color:var(--gold)}
+.btn-back{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:7px 14px;border-radius:8px;font-size:13px;transition:.15s}
+.btn-back:hover{border-color:var(--gold);color:var(--gold)}
+
+/* HOME */
+.home{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:48px;min-height:calc(100vh - 50px)}
+.home-title{text-align:center}
+.home-title h1{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,6vw,54px);font-weight:300;line-height:1.1;margin-bottom:10px}
+.home-title h1 em{color:var(--gold);font-style:italic}
+.home-title p{color:var(--lgray);font-size:13px;letter-spacing:1px;text-transform:uppercase}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;width:100%;max-width:620px}
+.card{background:white;border:1px solid var(--border);border-radius:18px;padding:32px 26px;text-align:left;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:.2s;cursor:pointer}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g),transparent)}
+.card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(20,20,20,.12);border-color:var(--g)}
+.card-icon{width:44px;height:44px;background:rgba(6,64,43,.08);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.card-num{font-size:11px;color:var(--gold);font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.card-title{font-size:17px;font-weight:600;line-height:1.3}
+.card-desc{font-size:13px;color:var(--gray);line-height:1.6}
+.card-arrow{font-size:18px;color:var(--g);margin-top:auto;align-self:flex-end}
+
+/* FORM */
+.form-wrap{max-width:700px;margin:0 auto;padding:28px 20px 64px;width:100%}
+.progress{display:flex;align-items:center;gap:8px;margin-bottom:36px}
+.step{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:white;color:var(--lgray);flex-shrink:0;transition:.2s}
+.step.active{background:var(--g);border-color:var(--g);color:white}
+.step.done{background:var(--g);border-color:var(--g);color:white}
+.step-line{flex:1;height:1.5px;background:var(--border);transition:.2s}
+.step-line.done{background:var(--g)}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;margin-bottom:6px}
+.sec-sub{font-size:13px;color:var(--gray);margin-bottom:28px}
+.fg{margin-bottom:18px}
+.lbl{display:block;font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+.inp{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:15px;background:white;color:var(--dark);transition:.15s;outline:none}
+.inp:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(6,64,43,.08)}
+textarea.inp{resize:vertical;min-height:80px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7280' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+.fcard{background:white;border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px}
+.fcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.fcard-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--gold)}
+.del-btn{background:none;border:none;color:var(--lgray);font-size:12px;cursor:pointer;padding:4px 8px}
+.del-btn:hover{color:#DC2626}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:white;cursor:pointer;transition:.15s;color:var(--gray)}
+.pill.sel-urgent{border-color:#DC2626;color:#DC2626;background:#FEF2F2;font-weight:600}
+.pill.sel-surveiller{border-color:#EA580C;color:#EA580C;background:#FFF7ED;font-weight:600}
+.pill.sel-informatif{border-color:var(--gray);color:var(--gray);background:#F9FAFB;font-weight:600}
+.pill.sel-avance,.pill.sel-conforme{border-color:var(--g);color:var(--g);background:rgba(6,64,43,.06);font-weight:600}
+.pill.sel-retard{border-color:#DC2626;color:#DC2626;background:#FEF2F2;font-weight:600}
+.add-btn{width:100%;background:none;border:1.5px dashed var(--border);border-radius:10px;padding:12px;font-size:14px;color:var(--gray);transition:.15s;margin-bottom:24px;cursor:pointer}
+.add-btn:hover{border-color:var(--g);color:var(--g);background:rgba(6,64,43,.03)}
+.actions{display:flex;gap:12px;margin-top:28px}
+.btn-p{flex:1;background:var(--g);color:white;border:none;padding:14px 24px;border-radius:12px;font-size:15px;font-weight:500;transition:.2s}
+.btn-p:hover{background:#085235}
+.btn-s{background:white;color:var(--dark);border:1.5px solid var(--border);padding:14px 24px;border-radius:12px;font-size:15px;font-weight:500;transition:.2s;cursor:pointer}
+.btn-s:hover{border-color:var(--dark)}
+.btn-gen{width:100%;background:var(--gold);color:var(--dark);border:none;padding:16px 24px;border-radius:12px;font-size:16px;font-weight:600;margin-top:20px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer}
+.btn-gen:hover{background:#C6943F}
+.summary-box{background:white;border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;margin-top:8px}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+.summary-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;line-height:1}
+.summary-lbl{font-size:11px;color:var(--gray);margin-top:4px}
+.check-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.check-item:last-child{border-bottom:none}
+.check-btns{display:flex;gap:6px}
+.check-btn{padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:500;cursor:pointer;color:var(--gray);transition:.15s}
+.check-btn.active-ras{border-color:#16A34A;background:#16A34A;color:white}
+.check-btn.active-warn{border-color:#EA580C;background:#EA580C;color:white}
+.check-btn.active-na{border-color:var(--gray);background:var(--gray);color:white}
+.cat-label{font-weight:600;font-size:13px;color:var(--g);margin:20px 0 10px;letter-spacing:.5px}
+
+/* PRINT MODAL */
+.modal{position:fixed;inset:0;z-index:200;background:#374151;overflow-y:auto;display:flex;flex-direction:column}
+.modal-bar{background:var(--dark);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;flex-shrink:0}
+.modal-bar-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:white;font-weight:600}
+.modal-btns{display:flex;gap:10px}
+.btn-print{background:var(--gold);color:var(--dark);border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:.15s}
+.btn-print:hover{background:#C6943F}
+.btn-close{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);padding:10px 16px;border-radius:8px;font-size:14px;cursor:pointer;transition:.15s}
+.btn-close:hover{border-color:var(--gold);color:var(--gold)}
+.modal-doc-wrap{padding:16px 16px 40px;display:flex;justify-content:center}
+
+/* PDF DOCUMENT */
+.doc{background:white;width:min(794px,100%);border-radius:4px;overflow:hidden;font-family:'Jost',sans-serif;font-size:13.5px;color:#1A1A1A;line-height:1.55}
+.doc-cover{background:#06402B;padding:52px 48px 40px}
+.doc-logo{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;color:white;letter-spacing:.5px}
+.doc-sub{font-size:12px;color:#D3A357;letter-spacing:2px;text-transform:uppercase;margin-top:4px;margin-bottom:44px}
+.doc-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:white;line-height:1.2;margin-bottom:6px}
+.doc-title strong{font-weight:600;display:block}
+.doc-conf{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.8px;margin-top:20px;font-style:italic}
+.doc-meta{display:flex;gap:24px;margin-top:18px}
+.doc-meta-item{color:rgba(255,255,255,.65);font-size:13px}
+.doc-meta-item strong{color:#D3A357}
+.gold-bar{height:4px;background:linear-gradient(90deg,#D3A357,rgba(211,163,87,0))}
+.doc-info{padding:24px 48px;display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #E4DDD3}
+.doc-info-item{padding:9px 0;border-bottom:1px solid #F0EDE8}
+.doc-info-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#9CA3AF;margin-bottom:2px}
+.doc-info-val{font-size:13.5px;font-weight:500}
+.doc-info-val.empty{color:#D1D5DB;font-style:italic}
+.doc-body{padding:26px 48px}
+.doc-sec{margin-bottom:30px}
+.doc-sec-head{background:#06402B;color:white;padding:9px 14px;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;border-radius:4px}
+.doc-sec-head.orange{background:#EA580C}
+.synth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat-box{border:1.5px solid #E4DDD3;border-radius:8px;padding:13px;text-align:center}
+.stat-box.urg{border-color:#FCA5A5;background:#FEF2F2}
+.stat-box.surv{border-color:#FDB97D;background:#FFF7ED}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1}
+.stat-box.urg .stat-num{color:#DC2626}
+.stat-box.surv .stat-num{color:#EA580C}
+.stat-lbl{font-size:10px;color:#6B7280;letter-spacing:.8px;text-transform:uppercase;margin-top:3px}
+.cost-bar{border-left:4px solid #D3A357;padding:11px 14px;background:#FAFAF8;border-radius:0 6px 6px 0;margin-bottom:18px}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.cost-lbl{font-size:13px;color:#6B7280}
+.cost-val{font-size:14px;font-weight:600}
+.cost-val.red{color:#DC2626}
+.obs-box{border:1px solid #E4DDD3;border-radius:6px;padding:13px;min-height:60px;font-size:13px;color:#374151;white-space:pre-wrap}
+.anomaly{border:1.5px solid #E4DDD3;border-radius:10px;overflow:hidden;margin-bottom:14px;page-break-inside:avoid}
+.anomaly-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#F7F5F0;border-bottom:1px solid #E4DDD3}
+.anomaly-num{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#D3A357}
+.sev-badge{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+.sev-badge.urgent{color:#DC2626;background:#FEF2F2;border:1px solid #FCA5A5}
+.sev-badge.surveiller{color:#EA580C;background:#FFF7ED;border:1px solid #FDB97D}
+.sev-badge.informatif{color:#6B7280;background:#F9FAFB;border:1px solid #E4DDD3}
+.anomaly-cost{font-size:13px;font-weight:600;color:#DC2626}
+.anomaly-body{padding:13px 14px;display:flex;flex-direction:column;gap:9px}
+.field{display:flex;gap:12px}
+.field-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:#9CA3AF;width:105px;flex-shrink:0;padding-top:2px}
+.field-val{font-size:13px;color:#374151;flex:1}
+.table{border:1px solid #E4DDD3;border-radius:8px;overflow:hidden;margin-bottom:14px}
+.table-head{display:grid;background:#06402B;color:white;font-size:10.5px;font-weight:500;letter-spacing:.8px;text-transform:uppercase}
+.table-head > div{padding:8px 10px}
+.table-row{display:grid;border-top:1px solid #F0EDE8;font-size:12.5px}
+.table-row:nth-child(even){background:#FAFAF8}
+.table-row > div{padding:7px 10px}
+.tc{text-align:center}
+.sign-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;border-top:1px solid #E4DDD3;padding-top:20px;margin-top:20px}
+.sign-block{display:flex;flex-direction:column;gap:6px}
+.sign-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#9CA3AF}
+.sign-name{font-size:15px;font-weight:600}
+.sign-role{font-size:12px;color:#6B7280}
+.sign-line{border-bottom:1px solid #E4DDD3;height:38px;margin-top:6px}
+.doc-footer{background:#F7F5F0;border-top:1px solid #E4DDD3;padding:11px 48px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#9CA3AF}
+
+/* PRINT */
+@media print{
+  .topbar,.form-wrap,.home,.modal-bar{display:none!important}
+  .modal{position:static;background:white;overflow:visible}
+  .modal-doc-wrap{padding:0}
+  .doc{width:100%;border-radius:0}
+  @page{margin:0;size:A4}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span class="logo">ZAF <span>BAT</span></span>
+  <button class="btn-back hidden" id="backBtn" onclick="goHome()">← Accueil</button>
+</div>
+
+<!-- HOME -->
+<div class="home" id="homeScreen">
+  <div class="home-title">
+    <h1>Générer un <em>document</em><br>professionnel</h1>
+    <p>ZAF BAT · Outils internes</p>
+  </div>
+  <div class="cards">
+    <button class="card" onclick="showScreen('audit')">
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06402B" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/><circle cx="17" cy="17" r="3"/><path d="M21 21l-2-2"/></svg>
+      </div>
+      <div>
+        <div class="card-num">Service 01</div>
+        <div class="card-title">Rapport d'audit de chantier</div>
+      </div>
+      <div class="card-desc">Documentez les anomalies, évaluez les coûts, générez un PDF branded en un clic.</div>
+      <div class="card-arrow">→</div>
+    </button>
+    <button class="card" onclick="showScreen('cr')">
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06402B" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+      </div>
+      <div>
+        <div class="card-num">Service 03</div>
+        <div class="card-title">Compte-rendu hebdomadaire</div>
+      </div>
+      <div class="card-desc">Avancement, travaux, factures, alertes. PDF prêt à envoyer sur WhatsApp en 2 minutes.</div>
+      <div class="card-arrow">→</div>
+    </button>
+  </div>
+</div>
+
+<!-- AUDIT FORM -->
+<div class="form-wrap hidden" id="auditScreen">
+  <div class="progress" id="auditProgress"></div>
+  <div id="auditStepContent"></div>
+</div>
+
+<!-- CR FORM -->
+<div class="form-wrap hidden" id="crScreen">
+  <div class="progress" id="crProgress"></div>
+  <div id="crStepContent"></div>
+</div>
+
+<!-- MODAL PDF PREVIEW -->
+<div class="modal hidden" id="pdfModal">
+  <div class="modal-bar">
+    <span class="modal-bar-title" id="modalTitle">Aperçu · Rapport</span>
+    <div class="modal-btns">
+      <button class="btn-print" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimer / PDF
+      </button>
+      <button class="btn-close" onclick="closeModal()">✕ Fermer</button>
+    </div>
+  </div>
+  <div class="modal-doc-wrap">
+    <div class="doc" id="pdfContent"></div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────
+const PHASES = ['Fondations','Gros œuvre','Maçonnerie','Clos couvert','Second œuvre','Finitions'];
+const CHECK = [
+  {cat:'Structure & Fondations', items:['Dosage et qualité du béton','Ferraillage conforme aux plans','Fondations et semelles','Chaînages et poteaux','Hourdis / plancher']},
+  {cat:'Maçonnerie & Étanchéité', items:['Murs (aplomb, joints)','Enduits intérieurs','Enduits extérieurs','Étanchéité toiture / terrasse','Évacuations eaux pluviales']},
+  {cat:'Finitions & Second œuvre', items:['Carrelage sol','Carrelage mural','Plâtrerie / faux-plafonds','Menuiseries bois','Menuiseries alu / PVC','Plomberie apparente','Électricité apparente','Conformité aux plans']}
+];
+
+let auditStep = 0;
+let crStep = 0;
+const audit = {ref:'',client:'',adresse:'',ville:'',type:'',surface:'',phase:'',dateVisite:'',observations:'',coutTotal:'',economie:'',anomalies:[newAnomaly()],checklist:{}};
+const cr = {projet:'',client:'',adresse:'',semaine:'',dateVisite:'',phase:'',prevu:'',reel:'',ecart:'conforme',travaux:[newTravail()],factures:[newFacture()],alertes:[newAlerte()],prochains:'',decisions:''};
+
+function newAnomaly(){return {zone:'',description:'',recommandation:'',severite:'',cout:''}}
+function newTravail(){return {tache:'',qualite:'',conforme:''}}
+function newFacture(){return {entreprise:'',montant:'',verifie:'',avis:''}}
+function newAlerte(){return {zone:'',constat:'',action:'',delai:''}}
+
+// ─── NAVIGATION ──────────────────────────────────────────────
+function showScreen(s){
+  document.getElementById('homeScreen').classList.add('hidden');
+  document.getElementById('backBtn').classList.remove('hidden');
+  if(s==='audit'){document.getElementById('auditScreen').classList.remove('hidden');renderAuditStep();}
+  if(s==='cr'){document.getElementById('crScreen').classList.remove('hidden');renderCRStep();}
+}
+function goHome(){
+  ['auditScreen','crScreen'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('homeScreen').classList.remove('hidden');
+  document.getElementById('backBtn').classList.add('hidden');
+  auditStep=0; crStep=0;
+}
+function closeModal(){document.getElementById('pdfModal').classList.add('hidden');}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+function fmtDate(d){if(!d)return '—';try{return new Date(d).toLocaleDateString('fr-MA',{day:'2-digit',month:'long',year:'numeric'});}catch{return d;}}
+function fmtNum(n){if(!n&&n!==0)return '—';return Number(n).toLocaleString('fr-MA')+' MAD';}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function progressHTML(steps, current){
+  return steps.map((s,i)=>`
+    <div class="step ${i<current?'done':i===current?'active':''}">${i<current?'✓':i+1}</div>
+    ${i<steps.length-1?`<div class="step-line ${i<current?'done':''}"></div>`:''}`).join('');
+}
+
+function phaseOptions(val){return `<option value="">Sélectionner</option>${PHASES.map(p=>`<option${p===val?' selected':''}>${p}</option>`).join('')}`;}
+
+function bind(id,key,obj){
+  const el=document.getElementById(id);
+  if(el){el.addEventListener('input',e=>{obj[key]=e.target.value;onStateChange();});}
+}
+
+function onStateChange(){
+  // Re-render summary counters etc. without full re-render
+  const urgEl=document.getElementById('summUrgent');
+  const survEl=document.getElementById('summSurv');
+  const totEl=document.getElementById('summTot');
+  if(urgEl) urgEl.textContent=audit.anomalies.filter(a=>a.severite==='urgent').length;
+  if(survEl) survEl.textContent=audit.anomalies.filter(a=>a.severite==='surveiller').length;
+  if(totEl) totEl.textContent=audit.anomalies.length;
+}
+
+// ─── AUDIT STEPS ─────────────────────────────────────────────
+const AUDIT_STEPS = ['Projet','Anomalies','Checklist','Bilan'];
+
+function renderAuditStep(){
+  document.getElementById('auditProgress').innerHTML = progressHTML(AUDIT_STEPS, auditStep);
+  const c = document.getElementById('auditStepContent');
+  if(auditStep===0) c.innerHTML = auditStep0();
+  if(auditStep===1) c.innerHTML = auditStep1();
+  if(auditStep===2) c.innerHTML = auditStep2();
+  if(auditStep===3) c.innerHTML = auditStep3();
+  bindAuditInputs();
+}
+
+function auditStep0(){return `
+  <div class="sec-title">Informations projet</div>
+  <div class="sec-sub">Renseignez les détails du chantier à auditer</div>
+  <div class="row">
+    <div class="fg"><label class="lbl">Référence dossier</label><input class="inp" id="aRef" value="${esc(audit.ref)}" placeholder="ZAF-2025-001"></div>
+    <div class="fg"><label class="lbl">Ville</label><input class="inp" id="aVille" value="${esc(audit.ville)}" placeholder="Casablanca"></div>
+  </div>
+  <div class="fg"><label class="lbl">Client</label><input class="inp" id="aClient" value="${esc(audit.client)}" placeholder="Nom du maître d'ouvrage"></div>
+  <div class="fg"><label class="lbl">Adresse du chantier</label><input class="inp" id="aAdresse" value="${esc(audit.adresse)}" placeholder="Adresse complète"></div>
+  <div class="row">
+    <div class="fg"><label class="lbl">Type de projet</label><input class="inp" id="aType" value="${esc(audit.type)}" placeholder="Villa R+1, appartement..."></div>
+    <div class="fg"><label class="lbl">Surface (m²)</label><input class="inp" type="number" id="aSurface" value="${esc(audit.surface)}" placeholder="350"></div>
+  </div>
+  <div class="row">
+    <div class="fg"><label class="lbl">Phase de chantier</label><select class="inp" id="aPhase">${phaseOptions(audit.phase)}</select></div>
+    <div class="fg"><label class="lbl">Date de visite</label><input class="inp" type="date" id="aDate" value="${audit.dateVisite}"></div>
+  </div>
+  <div class="actions"><button class="btn-p" onclick="auditStep=1;renderAuditStep()">Suivant → Anomalies</button></div>`;}
+
+function auditStep1(){
+  const cards = audit.anomalies.map((a,i)=>`
+    <div class="fcard">
+      <div class="fcard-head">
+        <span class="fcard-num">${String(i+1).padStart(2,'0')}</span>
+        ${audit.anomalies.length>1?`<button class="del-btn" onclick="delAnomaly(${i})">Supprimer</button>`:''}
+      </div>
+      <div class="fg"><label class="lbl">Zone / Poste</label><input class="inp" id="aZone${i}" value="${esc(a.zone)}" placeholder="Ex: Fondations Nord, Carrelage séjour..."></div>
+      <div class="fg"><label class="lbl">Constat</label><textarea class="inp" id="aDesc${i}" placeholder="Décrivez l'anomalie observée...">${esc(a.description)}</textarea></div>
+      <div class="fg"><label class="lbl">Recommandation</label><textarea class="inp" style="min-height:60px" id="aReco${i}" placeholder="Action à mener...">${esc(a.recommandation)}</textarea></div>
+      <div class="fg"><label class="lbl">Sévérité</label>
+        <div class="pills">
+          <button class="pill${a.severite==='urgent'?' sel-urgent':''}" onclick="setSev(${i},'urgent')">🔴 Urgent</button>
+          <button class="pill${a.severite==='surveiller'?' sel-surveiller':''}" onclick="setSev(${i},'surveiller')">🟠 À surveiller</button>
+          <button class="pill${a.severite==='informatif'?' sel-informatif':''}" onclick="setSev(${i},'informatif')">⚪ Informatif</button>
+        </div>
+      </div>
+      <div class="fg"><label class="lbl">Coût estimé (MAD)</label><input class="inp" type="number" id="aCout${i}" value="${esc(String(a.cout))}" placeholder="Ex: 12000"></div>
+    </div>`).join('');
+  return `
+    <div class="sec-title">Anomalies détectées</div>
+    <div class="sec-sub">Documentez chaque anomalie trouvée sur le chantier</div>
+    ${cards}
+    <button class="add-btn" onclick="addAnomaly()">+ Ajouter une anomalie</button>
+    <div class="actions">
+      <button class="btn-s" onclick="auditStep=0;renderAuditStep()">← Retour</button>
+      <button class="btn-p" onclick="saveAnomalyInputs();auditStep=2;renderAuditStep()">Suivant → Checklist</button>
+    </div>`;}
+
+function auditStep2(){
+  const rows = CHECK.map(({cat,items})=>`
+    <div class="cat-label">${cat}</div>
+    ${items.map(item=>{
+      const v=audit.checklist[item]||'';
+      return `<div class="check-item">
+        <span style="font-size:14px">${item}</span>
+        <div class="check-btns">
+          <button class="check-btn${v==='RAS'?' active-ras':''}" onclick="setCheck('${item.replace(/'/g,"\\'")}','RAS')">RAS</button>
+          <button class="check-btn${v==='⚠'?' active-warn':''}" onclick="setCheck('${item.replace(/'/g,"\\'")}','⚠')">⚠</button>
+          <button class="check-btn${v==='N/A'?' active-na':''}" onclick="setCheck('${item.replace(/'/g,"\\'")}','N/A')">N/A</button>
+        </div>
+      </div>`;}).join('')}`).join('');
+  return `
+    <div class="sec-title">Checklist d'inspection</div>
+    <div class="sec-sub">Cochez l'état de chaque élément inspecté</div>
+    ${rows}
+    <div class="actions" style="margin-top:24px">
+      <button class="btn-s" onclick="auditStep=1;renderAuditStep()">← Retour</button>
+      <button class="btn-p" onclick="auditStep=3;renderAuditStep()">Suivant → Bilan</button>
+    </div>`;}
+
+function auditStep3(){
+  const urg=audit.anomalies.filter(a=>a.severite==='urgent').length;
+  const surv=audit.anomalies.filter(a=>a.severite==='surveiller').length;
+  return `
+    <div class="sec-title">Bilan & Synthèse</div>
+    <div class="sec-sub">Finalisez le rapport avant génération</div>
+    <div class="row">
+      <div class="fg"><label class="lbl">Coût total corrections (MAD)</label><input class="inp" type="number" id="aCoutTotal" value="${esc(audit.coutTotal)}" placeholder="Auto si vide"></div>
+      <div class="fg"><label class="lbl">Économie négociable (MAD)</label><input class="inp" type="number" id="aEconomie" value="${esc(audit.economie)}" placeholder="Estimation"></div>
+    </div>
+    <div class="fg"><label class="lbl">Observations générales</label><textarea class="inp" style="min-height:100px" id="aObs" placeholder="Remarques sur l'état du chantier...">${esc(audit.observations)}</textarea></div>
+    <div class="summary-box">
+      <div style="font-size:11px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Récapitulatif</div>
+      <div class="summary-grid">
+        <div><div class="summary-num" id="summTot">${audit.anomalies.length}</div><div class="summary-lbl">Total</div></div>
+        <div><div class="summary-num" id="summUrgent" style="color:#DC2626">${urg}</div><div class="summary-lbl">Urgent</div></div>
+        <div><div class="summary-num" id="summSurv" style="color:#EA580C">${surv}</div><div class="summary-lbl">À surveiller</div></div>
+      </div>
+    </div>
+    <div class="actions"><button class="btn-s" onclick="saveBilan();auditStep=2;renderAuditStep()">← Retour</button></div>
+    <button class="btn-gen" onclick="saveBilan();generateAuditPDF()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Générer le rapport PDF
+    </button>`;}
+
+function bindAuditInputs(){
+  const bindings=[['aRef','ref'],['aVille','ville'],['aClient','client'],['aAdresse','adresse'],['aType','type'],['aSurface','surface'],['aPhase','phase'],['aDate','dateVisite']];
+  bindings.forEach(([id,k])=>bind(id,k,audit));
+}
+function saveAnomalyInputs(){
+  audit.anomalies.forEach((a,i)=>{
+    const z=document.getElementById('aZone'+i);const d=document.getElementById('aDesc'+i);
+    const r=document.getElementById('aReco'+i);const c=document.getElementById('aCout'+i);
+    if(z)a.zone=z.value;if(d)a.description=d.value;if(r)a.recommandation=r.value;if(c)a.cout=c.value;
+  });
+}
+function saveBilan(){
+  const ct=document.getElementById('aCoutTotal');const ec=document.getElementById('aEconomie');const ob=document.getElementById('aObs');
+  if(ct)audit.coutTotal=ct.value;if(ec)audit.economie=ec.value;if(ob)audit.observations=ob.value;
+}
+function setSev(i,v){saveAnomalyInputs();audit.anomalies[i].severite=v;renderAuditStep();}
+function setCheck(item,v){audit.checklist[item]=v;renderAuditStep();}
+function addAnomaly(){saveAnomalyInputs();audit.anomalies.push(newAnomaly());renderAuditStep();}
+function delAnomaly(i){saveAnomalyInputs();audit.anomalies.splice(i,1);renderAuditStep();}
+
+// ─── CR STEPS ────────────────────────────────────────────────
+const CR_STEPS = ['Projet','Travaux','Finances','Alertes & Suite'];
+
+function renderCRStep(){
+  document.getElementById('crProgress').innerHTML = progressHTML(CR_STEPS, crStep);
+  const c=document.getElementById('crStepContent');
+  if(crStep===0)c.innerHTML=crStep0();
+  if(crStep===1)c.innerHTML=crStep1();
+  if(crStep===2)c.innerHTML=crStep2();
+  if(crStep===3)c.innerHTML=crStep3();
+  bindCRInputs();
+}
+
+function crStep0(){return `
+  <div class="sec-title">Identification</div>
+  <div class="sec-sub">Projet et période concernée</div>
+  <div class="fg"><label class="lbl">Nom du projet</label><input class="inp" id="cProjet" value="${esc(cr.projet)}" placeholder="Villa R+1, Casablanca"></div>
+  <div class="fg"><label class="lbl">Client</label><input class="inp" id="cClient" value="${esc(cr.client)}" placeholder="Nom du client"></div>
+  <div class="fg"><label class="lbl">Adresse</label><input class="inp" id="cAdresse" value="${esc(cr.adresse)}" placeholder="Adresse du chantier"></div>
+  <div class="row">
+    <div class="fg"><label class="lbl">Semaine N°</label><input class="inp" type="number" id="cSem" value="${esc(String(cr.semaine))}" placeholder="12"></div>
+    <div class="fg"><label class="lbl">Date de visite</label><input class="inp" type="date" id="cDate" value="${cr.dateVisite}"></div>
+  </div>
+  <div class="fg"><label class="lbl">Phase en cours</label><select class="inp" id="cPhase">${phaseOptions(cr.phase)}</select></div>
+  <div class="row">
+    <div class="fg"><label class="lbl">Avancement prévu</label><input class="inp" id="cPrevु" value="${esc(cr.prevु)}" placeholder="Ex: 60%"></div>
+    <div class="fg"><label class="lbl">Avancement réel</label><input class="inp" id="cReel" value="${esc(cr.reel)}" placeholder="Ex: 55%"></div>
+  </div>
+  <div class="fg"><label class="lbl">Écart planning</label>
+    <div class="pills">
+      <button class="pill${cr.ecart==='avance'?' sel-avance':''}" onclick="cr.ecart='avance';renderCRStep()">🟢 En avance</button>
+      <button class="pill${cr.ecart==='conforme'?' sel-conforme':''}" onclick="cr.ecart='conforme';renderCRStep()">✅ Conforme</button>
+      <button class="pill${cr.ecart==='retard'?' sel-retard':''}" onclick="cr.ecart='retard';renderCRStep()">🔴 En retard</button>
+    </div>
+  </div>
+  <div class="actions"><button class="btn-p" onclick="saveCRStep0();crStep=1;renderCRStep()">Suivant → Travaux</button></div>`;}
+
+function crStep1(){
+  const cards=cr.travaux.map((t,i)=>`
+    <div class="fcard">
+      <div class="fcard-head"><span style="font-size:13px;font-weight:600;color:var(--gray)">Tâche ${i+1}</span>${cr.travaux.length>1?`<button class="del-btn" onclick="delTravail(${i})">Supprimer</button>`:''}</div>
+      <div class="fg"><label class="lbl">Poste / Tâche</label><input class="inp" id="tTache${i}" value="${esc(t.tache)}" placeholder="Ex: Pose carrelage séjour"></div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Qualité</label><select class="inp" id="tQual${i}"><option value="">—</option><option${t.qualite==='Bonne'?' selected':''}>Bonne</option><option${t.qualite==='À revoir'?' selected':''}>À revoir</option></select></div>
+        <div class="fg"><label class="lbl">Conforme aux plans</label><select class="inp" id="tConf${i}"><option value="">—</option><option${t.conforme==='Oui'?' selected':''}>Oui</option><option${t.conforme==='Non'?' selected':''}>Non</option></select></div>
+      </div>
+    </div>`).join('');
+  return `<div class="sec-title">Travaux réalisés</div><div class="sec-sub">Cette semaine sur le chantier</div>${cards}
+    <button class="add-btn" onclick="saveTravaux();cr.travaux.push(newTravail());renderCRStep()">+ Ajouter une tâche</button>
+    <div class="actions"><button class="btn-s" onclick="saveTravaux();crStep=0;renderCRStep()">← Retour</button><button class="btn-p" onclick="saveTravaux();crStep=2;renderCRStep()">Suivant → Finances</button></div>`;}
+
+function crStep2(){
+  const cards=cr.factures.map((f,i)=>`
+    <div class="fcard">
+      <div class="fcard-head"><span style="font-size:13px;font-weight:600;color:var(--gray)">Facture ${i+1}</span>${cr.factures.length>1?`<button class="del-btn" onclick="delFacture(${i})">Supprimer</button>`:''}</div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Entreprise</label><input class="inp" id="fEnt${i}" value="${esc(f.entreprise)}" placeholder="Nom de l'entreprise"></div>
+        <div class="fg"><label class="lbl">Montant (MAD)</label><input class="inp" type="number" id="fMont${i}" value="${esc(String(f.montant))}"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label class="lbl">Travaux vérifiés</label><select class="inp" id="fVer${i}"><option value="">—</option><option${f.verifie==='Oui'?' selected':''}>Oui</option><option${f.verifie==='Partiel'?' selected':''}>Partiel</option><option${f.verifie==='Non'?' selected':''}>Non</option></select></div>
+        <div class="fg"><label class="lbl">Avis ZAF BAT</label><select class="inp" id="fAvis${i}"><option value="">—</option><option${f.avis==='✅ Approuvé'?' selected':''}>✅ Approuvé</option><option${f.avis==='🚫 Bloqué'?' selected':''}>🚫 Bloqué</option></select></div>
+      </div>
+    </div>`).join('');
+  return `<div class="sec-title">Factures & Paiements</div><div class="sec-sub">Validation des factures de la semaine</div>${cards}
+    <button class="add-btn" onclick="saveFactures();cr.factures.push(newFacture());renderCRStep()">+ Ajouter une facture</button>
+    <div class="actions"><button class="btn-s" onclick="saveFactures();crStep=1;renderCRStep()">← Retour</button><button class="btn-p" onclick="saveFactures();crStep=3;renderCRStep()">Suivant → Alertes</button></div>`;}
+
+function crStep3(){
+  const cards=cr.alertes.map((a,i)=>`
+    <div class="fcard" style="border-color:${a.zone?'#FDB97D':'var(--border)'}">
+      <div class="fcard-head"><span style="font-size:13px;font-weight:600;color:#EA580C">⚠ Alerte ${i+1}</span>${cr.alertes.length>1?`<button class="del-btn" onclick="delAlerte(${i})">Supprimer</button>`:''}</div>
+      <div class="fg"><label class="lbl">Zone / Sujet</label><input class="inp" id="alZone${i}" value="${esc(a.zone)}" placeholder="Laisser vide si rien à signaler" oninput="saveAlertes();renderCRStep()"></div>
+      ${a.zone?`<div class="fg"><label class="lbl">Constat</label><textarea class="inp" style="min-height:60px" id="alConst${i}">${esc(a.constat)}</textarea></div>
+      <div class="row"><div class="fg"><label class="lbl">Action requise</label><input class="inp" id="alAct${i}" value="${esc(a.action)}"></div><div class="fg"><label class="lbl">Délai</label><input class="inp" id="alDelai${i}" value="${esc(a.delai)}" placeholder="Ex: 3 jours"></div></div>`:''}</div>`).join('');
+  return `<div class="sec-title">Alertes & Prochaine semaine</div><div class="sec-sub">Points d'attention et planning à venir</div>${cards}
+    <button class="add-btn" onclick="saveAlertes();cr.alertes.push(newAlerte());renderCRStep()">+ Ajouter une alerte</button>
+    <div class="fg"><label class="lbl">Travaux prévus la semaine prochaine</label><textarea class="inp" id="cProchains" placeholder="Listez les travaux prévus...">${esc(cr.prochains)}</textarea></div>
+    <div class="fg"><label class="lbl">Décisions en attente du client</label><textarea class="inp" style="min-height:60px" id="cDecisions">${esc(cr.decisions)}</textarea></div>
+    <div class="actions"><button class="btn-s" onclick="saveAlertes();crStep=2;renderCRStep()">← Retour</button></div>
+    <button class="btn-gen" onclick="saveAlertes();generateCRPDF()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Générer le compte-rendu PDF
+    </button>`;}
+
+function bindCRInputs(){
+  const b=[['cProjet','projet'],['cClient','client'],['cAdresse','adresse'],['cSem','semaine'],['cDate','dateVisite'],['cPhase','phase'],['cReel','reel']];
+  b.forEach(([id,k])=>bind(id,k,cr));
+  const pEl=document.getElementById('cPrevु');if(pEl)pEl.addEventListener('input',e=>cr.prevु=e.target.value);
+}
+function saveCRStep0(){
+  ['cProjet','cClient','cAdresse','cSem','cDate','cPhase','cReel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){const k={cProjet:'projet',cClient:'client',cAdresse:'adresse',cSem:'semaine',cDate:'dateVisite',cPhase:'phase',cReel:'reel'}[id];cr[k]=el.value;}
+  });
+  const pEl=document.getElementById('cPrevु');if(pEl)cr.prevु=pEl.value;
+}
+function saveTravaux(){cr.travaux.forEach((t,i)=>{const ta=document.getElementById('tTache'+i),q=document.getElementById('tQual'+i),c=document.getElementById('tConf'+i);if(ta)t.tache=ta.value;if(q)t.qualite=q.value;if(c)t.conforme=c.value;});}
+function saveFactures(){cr.factures.forEach((f,i)=>{const e=document.getElementById('fEnt'+i),m=document.getElementById('fMont'+i),v=document.getElementById('fVer'+i),a=document.getElementById('fAvis'+i);if(e)f.entreprise=e.value;if(m)f.montant=m.value;if(v)f.verifie=v.value;if(a)f.avis=a.value;});}
+function saveAlertes(){
+  cr.alertes.forEach((a,i)=>{
+    const z=document.getElementById('alZone'+i);if(z)a.zone=z.value;
+    const c=document.getElementById('alConst'+i);if(c)a.constat=c.value;
+    const ac=document.getElementById('alAct'+i);if(ac)a.action=ac.value;
+    const d=document.getElementById('alDelai'+i);if(d)a.delai=d.value;
+  });
+  const p=document.getElementById('cProchains');if(p)cr.prochains=p.value;
+  const d=document.getElementById('cDecisions');if(d)cr.decisions=d.value;
+}
+function delTravail(i){saveTravaux();cr.travaux.splice(i,1);renderCRStep();}
+function delFacture(i){saveFactures();cr.factures.splice(i,1);renderCRStep();}
+function delAlerte(i){saveAlertes();cr.alertes.splice(i,1);renderCRStep();}
+
+// ─── PDF GENERATION ──────────────────────────────────────────
+function infoRow(label,val){return `<div class="doc-info-item"><div class="doc-info-lbl">${label}</div><div class="doc-info-val${!val?' empty':''}">${val||'—'}</div></div>`;}
+
+function generateAuditPDF(){
+  saveAnomalyInputs();saveBilan();
+  const d=audit;
+  const urg=d.anomalies.filter(a=>a.severite==='urgent').length;
+  const surv=d.anomalies.filter(a=>a.severite==='surveiller').length;
+  const info=d.anomalies.filter(a=>a.severite==='informatif').length;
+  const totalCout=d.coutTotal||d.anomalies.reduce((s,a)=>s+(Number(a.cout)||0),0);
+
+  // Checklist rows
+  const checkHtml=CHECK.map(({cat,items})=>{
+    const rows=items.filter(it=>d.checklist[it]).map(it=>{
+      const v=d.checklist[it];const col=v==='RAS'?'#16A34A':v==='⚠'?'#EA580C':'#9CA3AF';
+      return `<div class="table-row" style="grid-template-columns:1fr 80px"><div>${it}</div><div class="tc" style="font-weight:600;color:${col}">${v}</div></div>`;}).join('');
+    if(!rows)return '';
+    return `<div class="table" style="margin-bottom:12px"><div class="table-head" style="grid-template-columns:1fr 80px"><div>${cat}</div><div class="tc">Statut</div></div>${rows}</div>`;}).join('');
+
+  // Anomalies
+  const anomHtml=d.anomalies.filter(a=>a.zone||a.description).map((a,i)=>{
+    const sevLabel=a.severite==='urgent'?'🔴 Urgent':a.severite==='surveiller'?'🟠 À surveiller':a.severite==='informatif'?'⚪ Informatif':'';
+    return `<div class="anomaly">
+      <div class="anomaly-head">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="anomaly-num">${String(i+1).padStart(2,'0')}</span>
+          ${a.severite?`<span class="sev-badge ${a.severite}">${sevLabel}</span>`:''}
+        </div>
+        ${a.cout?`<span class="anomaly-cost">${fmtNum(a.cout)}</span>`:''}
+      </div>
+      <div class="anomaly-body">
+        ${a.zone?`<div class="field"><span class="field-lbl">Zone / Poste</span><span class="field-val">${esc(a.zone)}</span></div>`:''}
+        ${a.description?`<div class="field"><span class="field-lbl">Constat</span><span class="field-val">${esc(a.description)}</span></div>`:''}
+        ${a.recommandation?`<div class="field"><span class="field-lbl">Recommandation</span><span class="field-val">${esc(a.recommandation)}</span></div>`:''}
+      </div>
+    </div>`;}).join('');
+
+  const html=`
+    <div class="doc-cover"><div class="doc-logo">ZAF BAT</div><div class="doc-sub">Maîtrise d'Ouvrage Déléguée</div><div class="doc-title">Rapport d'audit<br><strong>de chantier</strong></div><div class="doc-conf">Document confidentiel · Usage exclusif du maître d'ouvrage</div></div>
+    <div class="gold-bar"></div>
+    <div class="doc-info">
+      ${infoRow('Référence',d.ref)}${infoRow('Client',d.client)}${infoRow('Adresse',d.adresse)}${infoRow('Ville',d.ville)}
+      ${infoRow('Type de projet',d.type)}${infoRow('Surface',d.surface?d.surface+' m²':'')}${infoRow('Phase',d.phase)}${infoRow('Date de visite',fmtDate(d.dateVisite))}
+      ${infoRow('Ingénieur inspecteur','Achraf Zaddoug')}${infoRow('Rapport établi le',fmtDate(new Date().toISOString().split('T')[0]))}
+    </div>
+    <div class="doc-body">
+      <div class="doc-sec">
+        <div class="doc-sec-head">Synthèse exécutive</div>
+        <div class="synth-grid">
+          <div class="stat-box"><div class="stat-num">${d.anomalies.length}</div><div class="stat-lbl">Total</div></div>
+          <div class="stat-box urg"><div class="stat-num">${urg}</div><div class="stat-lbl">Urgent</div></div>
+          <div class="stat-box surv"><div class="stat-num">${surv}</div><div class="stat-lbl">À surveiller</div></div>
+          <div class="stat-box"><div class="stat-num">${info}</div><div class="stat-lbl">Informatif</div></div>
+        </div>
+        ${totalCout||d.economie?`<div class="cost-bar">${totalCout?`<div class="cost-row"><span class="cost-lbl">Coût estimé des corrections</span><span class="cost-val red">${fmtNum(totalCout)}</span></div>`:''}${d.economie?`<div class="cost-row"><span class="cost-lbl">Économie négociable estimée</span><span class="cost-val" style="color:#06402B">${fmtNum(d.economie)}</span></div>`:''}</div>`:''}
+        ${d.observations?`<div style="font-size:12px;color:#6B7280;margin-bottom:8px;font-weight:500">Observations générales</div><div class="obs-box">${esc(d.observations)}</div>`:''}
+      </div>
+      ${checkHtml?`<div class="doc-sec"><div class="doc-sec-head">Checklist d'inspection</div>${checkHtml}</div>`:''}
+      ${anomHtml?`<div class="doc-sec"><div class="doc-sec-head">Anomalies détectées</div>${anomHtml}</div>`:''}
+      <div class="sign-row">
+        <div class="sign-block"><div class="sign-lbl">Établi par</div><div class="sign-name">Achraf Zaddoug</div><div class="sign-role">Ingénieur Civil · ZAF BAT</div><div class="sign-line"></div></div>
+        <div class="sign-block"><div class="sign-lbl">Lu et approuvé</div><div class="sign-name">${esc(d.client)||'Client'}</div><div class="sign-role">Maître d'ouvrage</div><div class="sign-line"></div></div>
+      </div>
+    </div>
+    <div class="doc-footer"><span>ZAF BAT · Maîtrise d'Ouvrage Déléguée</span><span>zafbatiment@gmail.com · +212 717 380 728 · zafbat.ma</span></div>`;
+
+  document.getElementById('pdfContent').innerHTML=html;
+  document.getElementById('modalTitle').textContent='Aperçu · Rapport d\'audit';
+  document.getElementById('pdfModal').classList.remove('hidden');
+}
+
+function generateCRPDF(){
+  saveAlertes();saveCRStep0();
+  const d=cr;
+  const alertesActives=d.alertes.filter(a=>a.zone);
+  const ecartLabel=d.ecart==='avance'?'✅ En avance':d.ecart==='retard'?'🔴 En retard':'✅ Conforme';
+
+  const travauxHtml=d.travaux.filter(t=>t.tache).map(t=>{
+    const qColor=t.qualite==='Bonne'?'#16A34A':'#EA580C';
+    const cColor=t.conforme==='Oui'?'#16A34A':t.conforme==='Non'?'#DC2626':'#9CA3AF';
+    return `<div class="table-row" style="grid-template-columns:1fr 90px 90px"><div>${esc(t.tache)}</div><div class="tc" style="color:${qColor}">${t.qualite||'—'}</div><div class="tc" style="color:${cColor}">${t.conforme||'—'}</div></div>`;}).join('');
+
+  const factHtml=d.factures.filter(f=>f.entreprise).map(f=>{
+    const aColor=f.avis?.includes('Approuvé')?'#16A34A':f.avis?.includes('Bloqué')?'#DC2626':'#9CA3AF';
+    return `<div class="table-row" style="grid-template-columns:1fr 110px 90px 100px"><div>${esc(f.entreprise)}</div><div class="tc" style="font-weight:500">${f.montant?Number(f.montant).toLocaleString('fr-MA')+' MAD':'—'}</div><div class="tc">${f.verifie||'—'}</div><div class="tc" style="font-weight:600;color:${aColor}">${f.avis||'—'}</div></div>`;}).join('');
+
+  const alertHtml=alertesActives.map((a,i)=>`
+    <div class="anomaly" style="border-color:#FDB97D">
+      <div class="anomaly-head" style="background:#FFF7ED"><span style="font-weight:600;color:#EA580C">⚠ Alerte ${i+1} · ${esc(a.zone)}</span>${a.delai?`<span style="font-size:12px;color:#6B7280">Délai : ${esc(a.delai)}</span>`:''}</div>
+      <div class="anomaly-body">
+        ${a.constat?`<div class="field"><span class="field-lbl">Constat</span><span class="field-val">${esc(a.constat)}</span></div>`:''}
+        ${a.action?`<div class="field"><span class="field-lbl">Action requise</span><span class="field-val">${esc(a.action)}</span></div>`:''}
+      </div>
+    </div>`).join('');
+
+  const html=`
+    <div class="doc-cover"><div class="doc-logo">ZAF BAT</div><div class="doc-sub">Maîtrise d'Ouvrage Déléguée</div><div class="doc-title">Compte-rendu<br><strong>de chantier</strong></div>
+    <div class="doc-meta">${d.semaine?`<div class="doc-meta-item">Semaine <strong>N° ${esc(String(d.semaine))}</strong></div>`:''}${d.dateVisite?`<div class="doc-meta-item">Visite du <strong>${fmtDate(d.dateVisite)}</strong></div>`:''}</div></div>
+    <div class="gold-bar"></div>
+    <div class="doc-info">
+      ${infoRow('Projet',d.projet)}${infoRow('Client',d.client)}${infoRow('Adresse',d.adresse)}${infoRow('Phase en cours',d.phase)}
+      ${infoRow('Avancement prévu',d.prevु)}${infoRow('Avancement réel',d.reel)}${infoRow('Écart planning',ecartLabel)}${infoRow('Rédigé par','Achraf Zaddoug · ZAF BAT')}
+    </div>
+    <div class="doc-body">
+      ${travauxHtml?`<div class="doc-sec"><div class="doc-sec-head">Travaux réalisés cette semaine</div><div class="table"><div class="table-head" style="grid-template-columns:1fr 90px 90px"><div>Poste / Tâche</div><div class="tc">Qualité</div><div class="tc">Conforme</div></div>${travauxHtml}</div></div>`:''}
+      ${factHtml?`<div class="doc-sec"><div class="doc-sec-head">Factures & Paiements</div><div class="table"><div class="table-head" style="grid-template-columns:1fr 110px 90px 100px"><div>Entreprise</div><div class="tc">Montant</div><div class="tc">Vérifiés</div><div class="tc">Avis ZAF BAT</div></div>${factHtml}</div></div>`:''}
+      ${alertHtml?`<div class="doc-sec"><div class="doc-sec-head orange">Points d'attention · Alertes</div>${alertHtml}</div>`:''}
+      ${d.prochains||d.decisions?`<div class="doc-sec"><div class="doc-sec-head">Prochaine semaine</div>${d.prochains?`<div style="font-size:12px;color:#6B7280;margin-bottom:8px">Travaux prévus</div><div class="obs-box" style="margin-bottom:14px">${esc(d.prochains)}</div>`:''}${d.decisions?`<div style="font-size:12px;color:#6B7280;margin-bottom:8px">Décisions en attente du client</div><div class="obs-box">${esc(d.decisions)}</div>`:''}</div>`:''}
+      <div class="sign-row">
+        <div class="sign-block"><div class="sign-lbl">Établi par ZAF BAT</div><div class="sign-name">Achraf Zaddoug</div><div class="sign-role">Ingénieur Civil</div><div class="sign-line"></div></div>
+        <div class="sign-block"><div class="sign-lbl">Lu et approuvé</div><div class="sign-name">${esc(d.client)||'Client'}</div><div class="sign-role">Date : _______________</div><div class="sign-line"></div></div>
+      </div>
+    </div>
+    <div class="doc-footer"><span>ZAF BAT · Compte-Rendu Hebdomadaire</span><span>zafbatiment@gmail.com · +212 717 380 728</span></div>`;
+
+  document.getElementById('pdfContent').innerHTML=html;
+  document.getElementById('modalTitle').textContent='Aperçu · Compte-rendu hebdomadaire';
+  document.getElementById('pdfModal').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
