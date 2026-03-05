@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZAF BAT — Gestion Chantier</title>
+<style>
+:root {
+  --bg: #0b0f14;
+  --panel: #111722;
+  --panel-2: #151d2b;
+  --line: rgba(255,255,255,.08);
+  --line-2: rgba(255,255,255,.14);
+  --text: #eef2f7;
+  --muted: #a5b0c2;
+  --gold: #c7a46a;
+  --ivory: #f5efe4;
+  --danger: #ff6b6b;
+  --ok: #2ecc71;
+  --warn: #f39c12;
+  --radius: 18px;
+  --shadow: 0 14px 38px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background:linear-gradient(180deg,#0a0e14,#0d1320 48%,#0b1018); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body.locked { overflow:hidden; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; }
+input, select, textarea {
+  width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line-2);
+  background:#0f1520; color:var(--text); outline:none;
+}
+textarea { min-height: 120px; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: rgba(199,164,106,.75); box-shadow: 0 0 0 3px rgba(199,164,106,.15); }
+button {
+  border:0; border-radius:12px; padding:12px 16px; cursor:pointer; transition:.18s ease;
+}
+.btn-primary { background: linear-gradient(135deg, var(--gold), #e0c08a); color:#151515; font-weight:800; }
+.btn-primary:hover { transform: translateY(-1px); filter: brightness(1.03); }
+.btn-secondary { background: #1a2333; color: var(--text); border:1px solid var(--line-2); }
+.btn-secondary:hover { background:#202b3f; }
+.btn-danger { background: rgba(255,107,107,.12); color:#ffd4d4; border:1px solid rgba(255,107,107,.28); }
+.btn-danger:hover { background: rgba(255,107,107,.18); }
+.btn-ok { background: rgba(46,204,113,.14); color:#d8ffe7; border:1px solid rgba(46,204,113,.28); }
+.btn-ghost { background: transparent; color: var(--muted); border:1px dashed var(--line-2); }
+.app {
+  display:grid; grid-template-columns: 260px minmax(0,1fr); min-height:100vh;
+}
+.sidebar {
+  background:linear-gradient(180deg, rgba(17,23,34,.98), rgba(10,14,20,.98));
+  border-right:1px solid var(--line);
+  padding:24px 18px;
+  position:sticky; top:0; height:100vh;
+}
+.brand {
+  display:flex; align-items:center; gap:12px; margin-bottom:24px;
+}
+.brand-badge {
+  width:44px; height:44px; border-radius:14px; display:grid; place-items:center;
+  background:linear-gradient(135deg, rgba(199,164,106,.16), rgba(245,239,228,.10));
+  border:1px solid rgba(199,164,106,.22); color:var(--gold); font-weight:900; letter-spacing:.06em;
+}
+.brand-copy h1 { margin:0; font-size:1.04rem; letter-spacing:.03em; }
+.brand-copy p { margin:4px 0 0; color:var(--muted); font-size:.88rem; }
+.nav { display:flex; flex-direction:column; gap:8px; }
+.nav button {
+  text-align:left; background:transparent; color:var(--text); border:1px solid transparent;
+  padding:13px 14px; border-radius:14px; font-weight:700;
+}
+.nav button:hover, .nav button.active {
+  background:#172132; border-color: rgba(199,164,106,.18);
+}
+.main {
+  padding:24px;
+}
+.topbar {
+  display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px;
+}
+.title-wrap h2 { margin:0; font-size:1.55rem; }
+.title-wrap p { margin:6px 0 0; color:var(--muted); }
+.top-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.card {
+  background: linear-gradient(180deg, rgba(17,23,34,.96), rgba(14,20,31,.96));
+  border:1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding:18px;
+}
+.grid { display:grid; gap:18px; }
+.grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+.kpi {
+  padding:18px;
+  border-radius:16px;
+  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+  border:1px solid var(--line);
+}
+.kpi .label { color: var(--muted); font-size: .88rem; }
+.kpi .value { font-size: 1.75rem; font-weight: 900; margin-top: 8px; }
+.muted { color: var(--muted); }
+.row { display:flex; gap:12px; flex-wrap:wrap; }
+.row > * { flex:1; min-width: 180px; }
+.section-title { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.section-title h3 { margin:0; }
+.table-wrap { overflow:auto; border-radius:14px; border:1px solid var(--line); }
+table { width:100%; border-collapse: collapse; min-width: 760px; }
+th, td { padding:12px 14px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+th { color: var(--muted); font-weight:700; background: rgba(255,255,255,.02); }
+tr:last-child td { border-bottom:0; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding:7px 10px; border-radius:999px; font-size:.82rem; font-weight:800; border:1px solid var(--line); }
+.badge.ok { color:#d8ffe7; background:rgba(46,204,113,.12); border-color: rgba(46,204,113,.22); }
+.badge.warn { color:#ffe9c7; background:rgba(243,156,18,.12); border-color: rgba(243,156,18,.25); }
+.badge.danger { color:#ffd8d8; background:rgba(255,107,107,.12); border-color: rgba(255,107,107,.25); }
+.empty {
+  padding:28px; border:1px dashed var(--line-2); border-radius:16px; text-align:center; color:var(--muted);
+}
+.stepper { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.step {
+  padding:10px 12px; border-radius:12px; border:1px solid var(--line); color:var(--muted); background:#0f1520; font-weight:700;
+}
+.step.active { color:#181818; background:linear-gradient(135deg,var(--gold),#e6c790); border-color:transparent; }
+.step.done { color:#dffbe9; background:rgba(46,204,113,.12); border-color: rgba(46,204,113,.2); }
+.toolbar { display:flex; gap:10px; flex-wrap:wrap; }
+.hr { height:1px; background:var(--line); margin:18px 0; }
+.small { font-size:.88rem; }
+.right { text-align:right; }
+.doc-preview {
+  background:#ffffff; color:#111; border-radius:18px; padding:28px; min-height: 600px; border:1px solid rgba(0,0,0,.06);
+}
+.doc-preview * { color: inherit; }
+.doc-head { display:flex; justify-content:space-between; gap:24px; border-bottom:2px solid #d8c3a0; padding-bottom:16px; margin-bottom:18px; }
+.doc-logo { font-weight:900; font-size:1.18rem; letter-spacing:.06em; }
+.doc-chip { display:inline-block; padding:8px 12px; border-radius:999px; background:#f5efe4; color:#654c24; font-weight:800; }
+.doc-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:14px; margin-top:12px; }
+.doc-box { border:1px solid #e8ddcb; border-radius:14px; padding:12px 14px; background:#fbf9f5; }
+.doc-box .t { color:#6d665b; font-size:.82rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.doc-box .v { margin-top:8px; font-weight:800; }
+.doc-section { margin-top:20px; }
+.doc-section h4 { margin:0 0 10px; color:#6d5530; }
+.doc-table { width:100%; border-collapse: collapse; margin-top:8px; min-width:0; }
+.doc-table th, .doc-table td { border:1px solid #eadfcd; padding:10px 12px; font-size:.95rem; }
+.doc-note { margin-top:14px; padding:14px; border-radius:12px; background:#faf6ef; border:1px solid #eadfcd; }
+.footer-note { color: var(--muted); margin-top: 12px; }
+.login-overlay {
+  position: fixed; inset:0; background: radial-gradient(circle at top, rgba(199,164,106,.18), transparent 30%), rgba(5,8,13,.94);
+  display:grid; place-items:center; z-index: 50; padding:20px;
+}
+.login-card {
+  width:min(460px, 100%); background:linear-gradient(180deg, rgba(18,24,35,.98), rgba(12,17,26,.98));
+  border:1px solid rgba(199,164,106,.18); border-radius:24px; box-shadow: var(--shadow); padding:28px;
+}
+.login-card h2 { margin:0 0 10px; }
+.login-card p { color:var(--muted); }
+.notice { padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:#111827; color:var(--muted); }
+.notice.error { border-color: rgba(255,107,107,.28); color:#ffd8d8; background: rgba(255,107,107,.10); }
+.notice.ok { border-color: rgba(46,204,113,.28); color:#d8ffe7; background: rgba(46,204,113,.10); }
+@media (max-width: 980px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position:relative; height:auto; }
+  .grid-2, .grid-3, .grid-4, .doc-grid { grid-template-columns: 1fr; }
+  .main { padding:18px; }
+}
+</style>
+</head>
+<body class="locked">
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="brand" style="margin-bottom:18px;">
+      <div class="brand-badge">ZB</div>
+      <div class="brand-copy">
+        <h1>ZAF BAT</h1>
+        <p>Accès interne — Gestion Chantier</p>
+      </div>
+    </div>
+    <h2>Connexion</h2>
+    <p>Ce verrou est côté navigateur. Il n’offre pas de sécurité serveur réelle sur GitHub Pages.</p>
+    <div class="row" style="margin-top:16px;">
+      <div>
+        <label for="pw">Mot de passe</label>
+        <input id="pw" type="password" placeholder="Entrer le mot de passe" />
+      </div>
+    </div>
+    <div class="toolbar" style="margin-top:16px;">
+      <button class="btn-primary" onclick="unlockApp()">Entrer</button>
+      <button class="btn-secondary" onclick="document.getElementById('pw').value='zafbat2025'">Remplir le mot de passe</button>
+    </div>
+    <div id="loginMsg" class="footer-note small"></div>
+  </div>
+</div>
+
+<div class="app" id="app" style="display:none;">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">ZB</div>
+      <div class="brand-copy">
+        <h1>ZAF BAT</h1>
+        <p>Gestion chantier & documents</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <button id="nav-dashboard" class="nav-item active" onclick="showView('dashboard')">Tableau de bord</button>
+      <button id="nav-audit" class="nav-item" onclick="showView('audit')">Audit financier</button>
+      <button id="nav-cr" class="nav-item" onclick="showView('cr')">Compte rendu</button>
+      <button id="nav-devis" class="nav-item" onclick="showView('devis')">Devis / Proposition</button>
+      <button id="nav-history" class="nav-item" onclick="showView('history')">Historique</button>
+    </nav>
+    <div class="hr"></div>
+    <div class="notice small">Version GitHub Pages — données locales au navigateur avec export/import JSON.</div>
+  </aside>
+  <main class="main">
+    <div id="viewContent"></div>
+  </main>
+</div>
+
+<script>
+const PASSWORD = 'zafbat2025';
+const STORAGE_KEY = 'zafbat_app_v2';
+const FALLBACK_KEYS = ['zafbat_projects', 'zafbat_documents'];
+
+const S = {
+  version: 2,
+  view: 'dashboard',
+  projects: [],
+  documents: [],
+  audit: null,
+  auditStep: 0,
+  cr: null,
+  crStep: 0,
+  devis: null,
+  devisStep: 0,
+  currentProject: null,
+  loggedIn: false,
+  flash: null
+};
+
+function uid(prefix='id') {
+  return `${prefix}_${Math.random().toString(36).slice(2,10)}_${Date.now().toString(36)}`;
+}
+
+function nowISO() {
+  return new Date().toISOString();
+}
+
+function escapeHtml(v='') {
+  return String(v)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function safeNum(v, fallback=0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function saveState() {
+  const payload = {
+    version: 2,
+    projects: S.projects,
+    documents: S.documents,
+    audit: S.audit,
+    auditStep: S.auditStep,
+    cr: S.cr,
+    crStep: S.crStep,
+    devis: S.devis,
+    devisStep: S.devisStep,
+    currentProject: S.currentProject,
+    savedAt: Date.now()
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+function migrateLegacy() {
+  const hasNew = localStorage.getItem(STORAGE_KEY);
+  if (hasNew) return;
+  try {
+    const projects = JSON.parse(localStorage.getItem('zafbat_projects') || '[]');
+    const documents = JSON.parse(localStorage.getItem('zafbat_documents') || '[]');
+    if (Array.isArray(projects) || Array.isArray(documents)) {
+      const payload = {
+        version: 2,
+        projects: Array.isArray(projects) ? projects : [],
+        documents: Array.isArray(documents) ? documents : [],
+        audit: null,
+        auditStep: 0,
+        cr: null,
+        crStep: 0,
+        devis: null,
+        devisStep: 0,
+        currentProject: null,
+        savedAt: Date.now()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+  } catch (e) {}
+}
+
+function loadState() {
+  migrateLegacy();
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== 'object') return;
+    S.projects = Array.isArray(data.projects) ? data.projects : [];
+    S.documents = Array.isArray(data.documents) ? data.documents : [];
+    S.audit = data.audit || null;
+    S.auditStep = Number.isInteger(data.auditStep) ? data.auditStep : 0;
+    S.cr = data.cr || null;
+    S.crStep = Number.isInteger(data.crStep) ? data.crStep : 0;
+    S.devis = data.devis || null;
+    S.devisStep = Number.isInteger(data.devisStep) ? data.devisStep : 0;
+    S.currentProject = data.currentProject || null;
+  } catch (e) {
+    console.error('loadState', e);
+  }
+}
+
+function flash(message, kind='ok') {
+  S.flash = { message, kind, at: Date.now() };
+  renderCurrent();
+}
+
+function unlockApp() {
+  const v = document.getElementById('pw').value;
+  if (v === PASSWORD) {
+    S.loggedIn = true;
+    document.body.classList.remove('locked');
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('app').style.display = 'grid';
+    renderCurrent();
+  } else {
+    document.getElementById('loginMsg').textContent = 'Mot de passe incorrect.';
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') unlockApp();
+});
+
+function baseProject() {
+  return {
+    id: uid('prj'),
+    ref: '',
+    nom: '',
+    client: '',
+    contact: '',
+    telephone: '',
+    email: '',
+    adresse: '',
+    ville: 'Casablanca',
+    type: 'Villa',
+    surface: '',
+    statut: 'Prospect',
+    dateDebut: '',
+    dateFinPrevue: '',
+    budget: '',
+    responsable: '',
+    notes: '',
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    schemaVersion: 2
+  };
+}
+
+function resetAudit(force=false) {
+  if (S.audit && !force) return;
+  const p = S.currentProject || {};
+  S.audit = {
+    id: uid('audit'),
+    projet: p.nom || '',
+    projectId: p.id || '',
+    client: p.client || '',
+    contact: p.contact || '',
+    telephone: p.telephone || '',
+    email: p.email || '',
+    adresse: p.adresse || '',
+    ville: p.ville || 'Casablanca',
+    type: p.type || 'Villa',
+    surface: p.surface || '',
+    phase: '',
+    date: new Date().toISOString().slice(0,10),
+    responsable: p.responsable || '',
+    observations: '',
+    coutTotal: 0,
+    economie: 0,
+    anomalies: [],
+    checklist: [],
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    schemaVersion: 2
+  };
+  S.auditStep = 0;
+  saveState();
+}
+
+function resetCR(force=false) {
+  if (S.cr && !force) return;
+  const p = S.currentProject || {};
+  S.cr = {
+    id: uid('cr'),
+    projet: p.nom || '',
+    projectId: p.id || '',
+    client: p.client || '',
+    contact: p.contact || '',
+    telephone: p.telephone || '',
+    email: p.email || '',
+    adresse: p.adresse || '',
+    semaine: '',
+    phase: '',
+    prevu: '',
+    reel: '',
+    ecart: '',
+    travaux: [],
+    factures: [],
+    alertes: [],
+    prochains: '',
+    decisions: '',
+    responsable: p.responsable || '',
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    schemaVersion: 2
+  };
+  S.crStep = 0;
+  saveState();
+}
+
+function resetDevis(force=false) {
+  if (S.devis && !force) return;
+  const p = S.currentProject || {};
+  S.devis = {
+    id: uid('devis'),
+    projet: p.nom || '',
+    projectId: p.id || '',
+    client: p.client || '',
+    contact: p.contact || '',
+    telephone: p.telephone || '',
+    email: p.email || '',
+    adresse: p.adresse || '',
+    date: new Date().toISOString().slice(0,10),
+    validite: '15 jours',
+    conditions: '40% à la commande, 40% en cours, 20% à la livraison',
+    responsable: p.responsable || '',
+    lignes: [newLine()],
+    tva: 20,
+    remise: 0,
+    devise: 'MAD',
+    version: 1,
+    notes: '',
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    schemaVersion: 2
+  };
+  S.devisStep = 0;
+  saveState();
+}
+
+function newLine() {
+  return { id: uid('ln'), designation:'', unite:'u', quantite:1, prixUnitaire:0 };
+}
+
+function formatMoney(v, devise='MAD') {
+  const n = safeNum(v, 0);
+  return `${n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${devise}`;
+}
+
+function renderFlash() {
+  if (!S.flash) return '';
+  return `<div class="notice ${S.flash.kind === 'error' ? 'error' : 'ok'}">${escapeHtml(S.flash.message)}</div>`;
+}
+
+function renderCurrent() {
+  showView(S.view || 'dashboard');
+}
+
+function showView(v, data) {
+  S.view = v;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + v);
+  if (navEl) navEl.classList.add('active');
+
+  const c = document.getElementById('viewContent');
+  if (v === 'dashboard') c.innerHTML = renderDashboard();
+  else if (v === 'audit') {
+    if (data) S.currentProject = data;
+    if (!S.audit) resetAudit();
+    c.innerHTML = renderAuditView();
+  }
+  else if (v === 'cr') {
+    if (data) S.currentProject = data;
+    if (!S.cr) resetCR();
+    c.innerHTML = renderCRView();
+  }
+  else if (v === 'devis') {
+    if (data) S.currentProject = data;
+    if (!S.devis) resetDevis();
+    c.innerHTML = renderDevisView();
+  }
+  else if (v === 'history') c.innerHTML = renderHistory();
+  else c.innerHTML = renderDashboard();
+}
+
+function dashboardKPIs() {
+  const totalProjects = S.projects.length;
+  const totalDocs = S.documents.length;
+  const devisCount = S.documents.filter(d => d.type === 'devis').length;
+  const auditCount = S.documents.filter(d => d.type === 'audit').length;
+  return { totalProjects, totalDocs, devisCount, auditCount };
+}
+
+function renderDashboard() {
+  const k = dashboardKPIs();
+  return `
+    <div class="topbar">
+      <div class="title-wrap">
+        <h2>Tableau de bord</h2>
+        <p>Pilotage simple des projets, audits, CR et devis.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn-secondary" onclick="exportBackup()">Exporter JSON</button>
+        <label class="btn-secondary" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+          Importer JSON
+          <input type="file" accept="application/json" style="display:none;" onchange="importBackup(event)">
+        </label>
+        <button class="btn-primary" onclick="openNewProjectForm()">Nouveau projet</button>
+      </div>
+    </div>
+    ${renderFlash()}
+    <div class="grid grid-4">
+      <div class="kpi"><div class="label">Projets</div><div class="value">${k.totalProjects}</div></div>
+      <div class="kpi"><div class="label">Documents</div><div class="value">${k.totalDocs}</div></div>
+      <div class="kpi"><div class="label">Devis</div><div class="value">${k.devisCount}</div></div>
+      <div class="kpi"><div class="label">Audits</div><div class="value">${k.auditCount}</div></div>
+    </div>
+    <div class="hr"></div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="section-title">
+          <h3>Projets</h3>
+          <span class="muted small">${S.projects.length} élément(s)</span>
+        </div>
+        ${S.projects.length ? `
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Réf</th><th>Projet</th><th>Client</th><th>Statut</th><th></th></tr></thead>
+              <tbody>
+                ${S.projects.map(p => `
+                  <tr>
+                    <td>${escapeHtml(p.ref || '—')}</td>
+                    <td>${escapeHtml(p.nom || '—')}</td>
+                    <td>${escapeHtml(p.client || '—')}</td>
+                    <td><span class="badge ${projectBadgeClass(p.statut)}">${escapeHtml(p.statut || '—')}</span></td>
+                    <td>
+                      <div class="toolbar">
+                        <button class="btn-secondary" onclick="useProject('${p.id}','audit')">Audit</button>
+                        <button class="btn-secondary" onclick="useProject('${p.id}','cr')">CR</button>
+                        <button class="btn-secondary" onclick="useProject('${p.id}','devis')">Devis</button>
+                      </div>
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>` : `<div class="empty">Aucun projet pour le moment.</div>`}
+      </div>
+      <div class="card">
+        <div class="section-title">
+          <h3>Nouveau projet</h3>
+          <span class="muted small">Schéma enrichi v2</span>
+        </div>
+        ${renderProjectForm()}
+      </div>
+    </div>
+  `;
+}
+
+function projectBadgeClass(statut='') {
+  const s = String(statut).toLowerCase();
+  if (s.includes('termin')) return 'ok';
+  if (s.includes('cours')) return 'warn';
+  if (s.includes('prospect')) return 'warn';
+  return 'danger';
+}
+
+function renderProjectForm() {
+  return `
+    <div class="grid grid-2">
+      <div><label>Référence *</label><input id="p_ref" placeholder="ZB-2026-001"></div>
+      <div><label>Nom du projet *</label><input id="p_nom" placeholder="Villa Bouskoura"></div>
+      <div><label>Client *</label><input id="p_client" placeholder="Nom du client"></div>
+      <div><label>Contact</label><input id="p_contact" placeholder="Contact principal"></div>
+      <div><label>Téléphone</label><input id="p_tel" placeholder="+212 ..."></div>
+      <div><label>Email</label><input id="p_email" type="email" placeholder="client@email.com"></div>
+      <div><label>Adresse</label><input id="p_adresse" placeholder="Adresse chantier"></div>
+      <div><label>Ville</label><input id="p_ville" value="Casablanca"></div>
+      <div><label>Type</label><input id="p_type" value="Villa"></div>
+      <div><label>Surface (m²)</label><input id="p_surface" type="number" min="0"></div>
+      <div><label>Statut</label>
+        <select id="p_statut">
+          <option>Prospect</option>
+          <option>En étude</option>
+          <option>En cours</option>
+          <option>Terminé</option>
+        </select>
+      </div>
+      <div><label>Responsable</label><input id="p_resp" placeholder="Chef de projet"></div>
+      <div><label>Date début</label><input id="p_debut" type="date"></div>
+      <div><label>Date fin prévue</label><input id="p_fin" type="date"></div>
+      <div><label>Budget (MAD)</label><input id="p_budget" type="number" min="0" step="0.01"></div>
+      <div style="grid-column:1/-1;"><label>Notes</label><textarea id="p_notes" placeholder="Observations, contraintes, contexte"></textarea></div>
+    </div>
+    <div class="toolbar" style="margin-top:14px;">
+      <button class="btn-primary" onclick="createProject()">Créer le projet</button>
+    </div>
+  `;
+}
+
+function createProject() {
+  const ref = document.getElementById('p_ref').value.trim();
+  const nom = document.getElementById('p_nom').value.trim();
+  const client = document.getElementById('p_client').value.trim();
+  if (!ref || !nom || !client) {
+    flash('Référence, projet et client sont obligatoires.', 'error');
+    return;
+  }
+  const project = baseProject();
+  project.ref = ref;
+  project.nom = nom;
+  project.client = client;
+  project.contact = document.getElementById('p_contact').value.trim();
+  project.telephone = document.getElementById('p_tel').value.trim();
+  project.email = document.getElementById('p_email').value.trim();
+  project.adresse = document.getElementById('p_adresse').value.trim();
+  project.ville = document.getElementById('p_ville').value.trim() || 'Casablanca';
+  project.type = document.getElementById('p_type').value.trim() || 'Villa';
+  project.surface = safeNum(document.getElementById('p_surface').value, '');
+  project.statut = document.getElementById('p_statut').value;
+  project.responsable = document.getElementById('p_resp').value.trim();
+  project.dateDebut = document.getElementById('p_debut').value;
+  project.dateFinPrevue = document.getElementById('p_fin').value;
+  project.budget = safeNum(document.getElementById('p_budget').value, 0);
+  project.notes = document.getElementById('p_notes').value.trim();
+  S.projects.unshift(project);
+  saveState();
+  flash('Projet créé.', 'ok');
+}
+
+function openNewProjectForm() {
+  showView('dashboard');
+  setTimeout(() => document.getElementById('p_ref')?.focus(), 0);
+}
+
+function useProject(projectId, targetView) {
+  const p = S.projects.find(x => x.id === projectId);
+  if (!p) {
+    flash('Projet introuvable.', 'error');
+    return;
+  }
+  S.currentProject = p;
+  if (targetView === 'audit') {
+    S.audit = null;
+    resetAudit(true);
+  }
+  if (targetView === 'cr') {
+    S.cr = null;
+    resetCR(true);
+  }
+  if (targetView === 'devis') {
+    S.devis = null;
+    resetDevis(true);
+  }
+  saveState();
+  showView(targetView, p);
+}
+
+function renderAuditView() {
+  const a = S.audit;
+  return `
+    <div class="topbar">
+      <div class="title-wrap"><h2>Audit financier</h2><p>Brouillon conservé automatiquement.</p></div>
+      <div class="top-actions">
+        <button class="btn-secondary" onclick="resetAudit(true); showView('audit')">Nouveau brouillon</button>
+        <button class="btn-primary" onclick="generateAuditDoc()">Générer le document</button>
+      </div>
+    </div>
+    ${renderFlash()}
+    <div class="stepper">
+      <div class="step ${S.auditStep===0?'active':'done'}">1. Contexte</div>
+      <div class="step ${S.auditStep===1?'active':S.auditStep>1?'done':''}">2. Anomalies</div>
+      <div class="step ${S.auditStep===2?'active':''}">3. Synthèse</div>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        ${renderAuditEditor(a)}
+      </div>
+      <div class="card">
+        <div class="section-title"><h3>Aperçu</h3><span class="muted small">Source + rendu séparés</span></div>
+        <div class="doc-preview">${auditHTML(a)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAuditEditor(a) {
+  return `
+    <div class="grid grid-2">
+      <div><label>Projet *</label><input id="a_projet" value="${escapeHtml(a.projet)}" oninput="S.audit.projet=this.value; touchAudit()"></div>
+      <div><label>Client *</label><input id="a_client" value="${escapeHtml(a.client)}" oninput="S.audit.client=this.value; touchAudit()"></div>
+      <div><label>Contact</label><input value="${escapeHtml(a.contact)}" oninput="S.audit.contact=this.value; touchAudit()"></div>
+      <div><label>Téléphone</label><input value="${escapeHtml(a.telephone)}" oninput="S.audit.telephone=this.value; touchAudit()"></div>
+      <div><label>Email</label><input value="${escapeHtml(a.email)}" oninput="S.audit.email=this.value; touchAudit()"></div>
+      <div><label>Responsable</label><input value="${escapeHtml(a.responsable)}" oninput="S.audit.responsable=this.value; touchAudit()"></div>
+      <div><label>Adresse</label><input value="${escapeHtml(a.adresse)}" oninput="S.audit.adresse=this.value; touchAudit()"></div>
+      <div><label>Ville</label><input value="${escapeHtml(a.ville)}" oninput="S.audit.ville=this.value; touchAudit()"></div>
+      <div><label>Type</label><input value="${escapeHtml(a.type)}" oninput="S.audit.type=this.value; touchAudit()"></div>
+      <div><label>Surface</label><input type="number" min="0" value="${escapeHtml(a.surface)}" oninput="S.audit.surface=safeNum(this.value,''); touchAudit()"></div>
+      <div><label>Phase</label><input value="${escapeHtml(a.phase)}" oninput="S.audit.phase=this.value; touchAudit()"></div>
+      <div><label>Date</label><input type="date" value="${escapeHtml(a.date)}" oninput="S.audit.date=this.value; touchAudit()"></div>
+      <div style="grid-column:1/-1;"><label>Observations</label><textarea oninput="S.audit.observations=this.value; touchAudit()">${escapeHtml(a.observations)}</textarea></div>
+    </div>
+    <div class="hr"></div>
+    <div class="section-title"><h3>Anomalies</h3><button class="btn-secondary" onclick="addAuditAnomaly()">Ajouter</button></div>
+    ${a.anomalies.length ? a.anomalies.map((x,i)=>`
+      <div class="card" style="padding:14px;margin-bottom:10px;">
+        <div class="grid grid-2">
+          <div><label>Intitulé</label><input value="${escapeHtml(x.titre||'')}" oninput="S.audit.anomalies[${i}].titre=this.value; touchAudit()"></div>
+          <div><label>Lot</label><input value="${escapeHtml(x.lot||'')}" oninput="S.audit.anomalies[${i}].lot=this.value; touchAudit()"></div>
+          <div><label>Coût estimé</label><input type="number" min="0" step="0.01" value="${safeNum(x.cout,0)}" oninput="S.audit.anomalies[${i}].cout=safeNum(this.value,0); recomputeAuditTotals()"></div>
+          <div><label>Échéance</label><input type="date" value="${escapeHtml(x.echeance||'')}" oninput="S.audit.anomalies[${i}].echeance=this.value; touchAudit()"></div>
+          <div style="grid-column:1/-1;"><label>Détail</label><textarea oninput="S.audit.anomalies[${i}].detail=this.value; touchAudit()">${escapeHtml(x.detail||'')}</textarea></div>
+        </div>
+        <div class="toolbar" style="margin-top:10px;"><button class="btn-danger" onclick="removeAuditAnomaly('${x.id}')">Supprimer</button></div>
+      </div>`).join('') : `<div class="empty">Aucune anomalie ajoutée.</div>`}
+    <div class="hr"></div>
+    <div class="grid grid-2">
+      <div><label>Coût total</label><input type="number" value="${safeNum(a.coutTotal,0)}" oninput="S.audit.coutTotal=safeNum(this.value,0); touchAudit()"></div>
+      <div><label>Économie potentielle</label><input type="number" value="${safeNum(a.economie,0)}" oninput="S.audit.economie=safeNum(this.value,0); touchAudit()"></div>
+    </div>
+  `;
+}
+
+function touchAudit() {
+  S.audit.updatedAt = nowISO();
+  saveState();
+  showView('audit');
+}
+function addAuditAnomaly() {
+  S.audit.anomalies.push({ id: uid('anom'), titre:'', lot:'', cout:0, echeance:'', detail:'' });
+  touchAudit();
+}
+function removeAuditAnomaly(id) {
+  S.audit.anomalies = S.audit.anomalies.filter(x => x.id !== id);
+  recomputeAuditTotals();
+}
+function recomputeAuditTotals() {
+  S.audit.coutTotal = S.audit.anomalies.reduce((s,x)=>s+safeNum(x.cout,0),0);
+  touchAudit();
+}
+
+function auditHTML(a) {
+  return `
+    <div class="doc-head">
+      <div>
+        <div class="doc-logo">ZAF BAT</div>
+        <div class="muted">Audit financier chantier</div>
+      </div>
+      <div class="doc-chip">Audit</div>
+    </div>
+    <div class="doc-grid">
+      <div class="doc-box"><div class="t">Projet</div><div class="v">${escapeHtml(a.projet || '—')}</div></div>
+      <div class="doc-box"><div class="t">Client</div><div class="v">${escapeHtml(a.client || '—')}</div></div>
+      <div class="doc-box"><div class="t">Phase</div><div class="v">${escapeHtml(a.phase || '—')}</div></div>
+      <div class="doc-box"><div class="t">Date</div><div class="v">${escapeHtml(a.date || '—')}</div></div>
+    </div>
+    <div class="doc-section">
+      <h4>Observations</h4>
+      <div class="doc-note">${escapeHtml(a.observations || 'Aucune observation.')}</div>
+    </div>
+    <div class="doc-section">
+      <h4>Anomalies</h4>
+      ${a.anomalies.length ? `
+      <table class="doc-table"><thead><tr><th>Intitulé</th><th>Lot</th><th>Échéance</th><th>Coût</th></tr></thead><tbody>
+      ${a.anomalies.map(x=>`<tr><td>${escapeHtml(x.titre||'')}</td><td>${escapeHtml(x.lot||'')}</td><td>${escapeHtml(x.echeance||'')}</td><td>${formatMoney(x.cout||0)}</td></tr>`).join('')}
+      </tbody></table>` : `<div class="doc-note">Aucune anomalie.</div>`}
+    </div>
+    <div class="doc-section">
+      <h4>Synthèse</h4>
+      <div class="doc-grid">
+        <div class="doc-box"><div class="t">Coût total</div><div class="v">${formatMoney(a.coutTotal || 0)}</div></div>
+        <div class="doc-box"><div class="t">Économie potentielle</div><div class="v">${formatMoney(a.economie || 0)}</div></div>
+      </div>
+    </div>
+  `;
+}
+
+function generateAuditDoc() {
+  if (!S.audit.projet || !S.audit.client) {
+    flash('Projet et client sont obligatoires pour générer l’audit.', 'error');
+    return;
+  }
+  const html = auditHTML(S.audit);
+  const doc = {
+    id: uid('doc'),
+    type: 'audit',
+    name: `Audit - ${S.audit.projet}`,
+    projectId: S.audit.projectId || '',
+    projectName: S.audit.projet,
+    sourceData: structuredClone(S.audit),
+    htmlPreview: html,
+    summary: {
+      anomalies: S.audit.anomalies.length,
+      coutTotal: S.audit.coutTotal || 0
+    },
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+    schemaVersion: 2
+  };
+  S.documents.unshift(doc);
+  saveState();
+  flash('Audit généré et enregistré.', 'ok');
+  showView('history');
+}
+
+function renderCRView() {
+  const c = S.cr;
+  return `
+    <div class="topbar">
+      <div class="title-wrap"><h2>Compte rendu chantier</h2><p>Suivi opérationnel hebdomadaire.</p></div>
+      <div class="top-actions">
+        <button class="btn-secondary" onclick="resetCR(true); showView('cr')">Nouveau brouillon</button>
+        <button class="btn-primary" onclick="generateCRDoc()">Générer le document</button>
+      </div>
+    </div>
+    ${renderFlash()}
+    <div class="grid grid-2">
+      <div class="card">${renderCREditor(c)}</div>
+      <div class="card"><div class="section-title"><h3>Aperçu</h3></div><div class="doc-preview">${crHTML(c)}</div></div>
+    </div>
+  `;
+}
+
+function renderCREditor(c) {
+  return `
+    <div class="grid grid-2">
+      <div><label>Projet *</label><input value="${escapeHtml(c.projet)}" oninput="S.cr.projet=this.value; touchCR()"></div>
+      <div><label>Client *</label><input value="${escapeHtml(c.client)}" oninput="S.cr.client=this.value; touchCR()"></div>
+      <div><label>Semaine</label><input value="${escapeHtml(c.semaine)}" oninput="S.cr.semaine=this.value; touchCR()" placeholder="Semaine 10"></div>
+      <div><label>Phase</label><input value="${escapeHtml(c.phase)}" oninput="S.cr.phase=this.value; touchCR()"></div>
+      <div style="grid-column:1/-1;"><label>Prévu</label><textarea oninput="S.cr.prevu=this.value; touchCR()">${escapeHtml(c.prevu)}</textarea></div>
+      <div style="grid-column:1/-1;"><label>Réel</label><textarea oninput="S.cr.reel=this.value; touchCR()">${escapeHtml(c.reel)}</textarea></div>
+      <div style="grid-column:1/-1;"><label>Écart</label><textarea oninput="S.cr.ecart=this.value; touchCR()">${escapeHtml(c.ecart)}</textarea></div>
+      <div style="grid-column:1/-1;"><label>Prochaines actions</label><textarea oninput="S.cr.prochains=this.value; touchCR()">${escapeHtml(c.prochains)}</textarea></div>
+      <div style="grid-column:1/-1;"><label>Décisions</label><textarea oninput="S.cr.decisions=this.value; touchCR()">${escapeHtml(c.decisions)}</textarea></div>
+    </div>
+    <div class="hr"></div>
+    <div class="section-title"><h3>Travaux</h3><button class="btn-secondary" onclick="addCRTravail()">Ajouter</button></div>
+    ${c.travaux.length ? c.travaux.map((x,i)=>`
+      <div class="row" style="margin-bottom:8px;">
+        <input value="${escapeHtml(x.tache||'')}" placeholder="Tâche" oninput="S.cr.travaux[${i}].tache=this.value; touchCR()">
+        <input value="${escapeHtml(x.statut||'')}" placeholder="Statut" oninput="S.cr.travaux[${i}].statut=this.value; touchCR()">
+        <button class="btn-danger" style="flex:0 0 auto;min-width:120px;" onclick="removeCRTravail('${x.id}')">Supprimer</button>
+      </div>`).join('') : `<div class="empty">Aucun travail listé.</div>`}
+    <div class="hr"></div>
+    <div class="section-title"><h3>Factures</h3><button class="btn-secondary" onclick="addCRFacture()">Ajouter</button></div>
+    ${c.factures.length ? c.factures.map((x,i)=>`
+      <div class="grid grid-3" style="margin-bottom:10px;">
+        <input value="${escapeHtml(x.numero||'')}" placeholder="N° facture" oninput="S.cr.factures[${i}].numero=this.value; touchCR()">
+        <input type="number" min="0" step="0.01" value="${safeNum(x.montant,0)}" placeholder="Montant" oninput="S.cr.factures[${i}].montant=safeNum(this.value,0); touchCR()">
+        <button class="btn-danger" onclick="removeCRFacture('${x.id}')">Supprimer</button>
+      </div>`).join('') : `<div class="empty">Aucune facture listée.</div>`}
+  `;
+}
+function touchCR() { S.cr.updatedAt = nowISO(); saveState(); showView('cr'); }
+function addCRTravail() { S.cr.travaux.push({ id: uid('trv'), tache:'', statut:'' }); touchCR(); }
+function removeCRTravail(id) { S.cr.travaux = S.cr.travaux.filter(x => x.id !== id); touchCR(); }
+function addCRFacture() { S.cr.factures.push({ id: uid('fac'), numero:'', montant:0 }); touchCR(); }
+function removeCRFacture(id) { S.cr.factures = S.cr.factures.filter(x => x.id !== id); touchCR(); }
+function crHTML(c) {
+  const totalFactures = c.factures.reduce((s,x)=>s+safeNum(x.montant,0),0);
+  return `
+    <div class="doc-head"><div><div class="doc-logo">ZAF BAT</div><div class="muted">Compte rendu chantier</div></div><div class="doc-chip">CR</div></div>
+    <div class="doc-grid">
+      <div class="doc-box"><div class="t">Projet</div><div class="v">${escapeHtml(c.projet||'—')}</div></div>
+      <div class="doc-box"><div class="t">Client</div><div class="v">${escapeHtml(c.client||'—')}</div></div>
+      <div class="doc-box"><div class="t">Semaine</div><div class="v">${escapeHtml(c.semaine||'—')}</div></div>
+      <div class="doc-box"><div class="t">Phase</div><div class="v">${escapeHtml(c.phase||'—')}</div></div>
+    </div>
+    <div class="doc-section"><h4>Prévu</h4><div class="doc-note">${escapeHtml(c.prevu||'—')}</div></div>
+    <div class="doc-section"><h4>Réel</h4><div class="doc-note">${escapeHtml(c.reel||'—')}</div></div>
+    <div class="doc-section"><h4>Écart</h4><div class="doc-note">${escapeHtml(c.ecart||'—')}</div></div>
+    <div class="doc-section"><h4>Total factures</h4><div class="doc-note">${formatMoney(totalFactures)}</div></div>
+  `;
+}
+function generateCRDoc() {
+  if (!S.cr.projet || !S.cr.client) { flash('Projet et client sont obligatoires pour générer le CR.', 'error'); return; }
+  const html = crHTML(S.cr);
+  const doc = {
+    id: uid('doc'),
+    type: 'cr',
+    name: `CR - ${S.cr.projet}`,
+    projectId: S.cr.projectId || '',
+    projectName: S.cr.projet,
+    sourceData: structuredClone(S.cr),
+    htmlPreview: html,
+    summary: { factures: S.cr.factures.length, travaux: S.cr.travaux.length },
+    createdAt: nowISO(), updatedAt: nowISO(), schemaVersion: 2
+  };
+  S.documents.unshift(doc); saveState(); flash('Compte rendu généré.', 'ok'); showView('history');
+}
+
+function renderDevisView() {
+  const d = S.devis;
+  return `
+    <div class="topbar">
+      <div class="title-wrap"><h2>Devis / Proposition</h2><p>Calculs HT / remise / TVA / TTC.</p></div>
+      <div class="top-actions">
+        <button class="btn-secondary" onclick="resetDevis(true); showView('devis')">Nouveau brouillon</button>
+        <button class="btn-primary" onclick="generateDevisDoc()">Générer le document</button>
+      </div>
+    </div>
+    ${renderFlash()}
+    <div class="grid grid-2">
+      <div class="card">${renderDevisEditor(d)}</div>
+      <div class="card"><div class="section-title"><h3>Aperçu</h3></div><div class="doc-preview">${devisHTML(d)}</div></div>
+    </div>
+  `;
+}
+function devisTotals(d) {
+  const ht = d.lignes.reduce((s,x)=>s + safeNum(x.quantite,0) * safeNum(x.prixUnitaire,0), 0);
+  const remiseMontant = ht * (safeNum(d.remise,0) / 100);
+  const base = ht - remiseMontant;
+  const tvaMontant = base * (safeNum(d.tva,0) / 100);
+  const ttc = base + tvaMontant;
+  return { ht, remiseMontant, base, tvaMontant, ttc };
+}
+function renderDevisEditor(d) {
+  const t = devisTotals(d);
+  return `
+    <div class="grid grid-2">
+      <div><label>Projet *</label><input value="${escapeHtml(d.projet)}" oninput="S.devis.projet=this.value; touchDevis()"></div>
+      <div><label>Client *</label><input value="${escapeHtml(d.client)}" oninput="S.devis.client=this.value; touchDevis()"></div>
+      <div><label>Date</label><input type="date" value="${escapeHtml(d.date)}" oninput="S.devis.date=this.value; touchDevis()"></div>
+      <div><label>Validité</label><input value="${escapeHtml(d.validite)}" oninput="S.devis.validite=this.value; touchDevis()"></div>
+      <div><label>TVA %</label><input type="number" min="0" step="0.01" value="${safeNum(d.tva,20)}" oninput="S.devis.tva=safeNum(this.value,20); touchDevis()"></div>
+      <div><label>Remise %</label><input type="number" min="0" step="0.01" value="${safeNum(d.remise,0)}" oninput="S.devis.remise=safeNum(this.value,0); touchDevis()"></div>
+      <div style="grid-column:1/-1;"><label>Conditions</label><textarea oninput="S.devis.conditions=this.value; touchDevis()">${escapeHtml(d.conditions)}</textarea></div>
+      <div style="grid-column:1/-1;"><label>Notes</label><textarea oninput="S.devis.notes=this.value; touchDevis()">${escapeHtml(d.notes)}</textarea></div>
+    </div>
+    <div class="hr"></div>
+    <div class="section-title"><h3>Lignes</h3><button class="btn-secondary" onclick="addDevisLine()">Ajouter</button></div>
+    ${d.lignes.map((x,i)=>`
+      <div class="grid grid-4" style="margin-bottom:10px;">
+        <input value="${escapeHtml(x.designation||'')}" placeholder="Désignation" oninput="S.devis.lignes[${i}].designation=this.value; touchDevis()">
+        <input value="${escapeHtml(x.unite||'u')}" placeholder="Unité" oninput="S.devis.lignes[${i}].unite=this.value; touchDevis()">
+        <input type="number" min="0" step="0.01" value="${safeNum(x.quantite,1)}" placeholder="Quantité" oninput="S.devis.lignes[${i}].quantite=safeNum(this.value,0); touchDevis()">
+        <div class="row"><input type="number" min="0" step="0.01" value="${safeNum(x.prixUnitaire,0)}" placeholder="PU" oninput="S.devis.lignes[${i}].prixUnitaire=safeNum(this.value,0); touchDevis()"><button class="btn-danger" style="flex:0 0 auto;min-width:110px;" onclick="removeDevisLine('${x.id}')">Supprimer</button></div>
+      </div>`).join('')}
+    <div class="hr"></div>
+    <div class="grid grid-2">
+      <div class="doc-box"><div class="t">Total HT</div><div class="v">${formatMoney(t.ht, d.devise)}</div></div>
+      <div class="doc-box"><div class="t">Total TTC</div><div class="v">${formatMoney(t.ttc, d.devise)}</div></div>
+    </div>
+  `;
+}
+function touchDevis() { S.devis.updatedAt = nowISO(); saveState(); showView('devis'); }
+function addDevisLine() { S.devis.lignes.push(newLine()); touchDevis(); }
+function removeDevisLine(id) { S.devis.lignes = S.devis.lignes.filter(x => x.id !== id); touchDevis(); }
+function devisHTML(d) {
+  const t = devisTotals(d);
+  return `
+    <div class="doc-head"><div><div class="doc-logo">ZAF BAT</div><div class="muted">Devis / Proposition commerciale</div></div><div class="doc-chip">Devis</div></div>
+    <div class="doc-grid">
+      <div class="doc-box"><div class="t">Projet</div><div class="v">${escapeHtml(d.projet||'—')}</div></div>
+      <div class="doc-box"><div class="t">Client</div><div class="v">${escapeHtml(d.client||'—')}</div></div>
+      <div class="doc-box"><div class="t">Date</div><div class="v">${escapeHtml(d.date||'—')}</div></div>
+      <div class="doc-box"><div class="t">Validité</div><div class="v">${escapeHtml(d.validite||'—')}</div></div>
+    </div>
+    <div class="doc-section">
+      <h4>Détail</h4>
+      <table class="doc-table"><thead><tr><th>Désignation</th><th>Unité</th><th>Qté</th><th>PU</th><th>Total</th></tr></thead><tbody>
+        ${d.lignes.map(x=>`<tr><td>${escapeHtml(x.designation||'')}</td><td>${escapeHtml(x.unite||'')}</td><td>${safeNum(x.quantite,0)}</td><td>${formatMoney(x.prixUnitaire||0, d.devise)}</td><td>${formatMoney(safeNum(x.quantite,0)*safeNum(x.prixUnitaire,0), d.devise)}</td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="doc-section">
+      <h4>Totaux</h4>
+      <div class="doc-grid">
+        <div class="doc-box"><div class="t">HT</div><div class="v">${formatMoney(t.ht, d.devise)}</div></div>
+        <div class="doc-box"><div class="t">Remise</div><div class="v">${formatMoney(t.remiseMontant, d.devise)}</div></div>
+        <div class="doc-box"><div class="t">TVA</div><div class="v">${formatMoney(t.tvaMontant, d.devise)}</div></div>
+        <div class="doc-box"><div class="t">TTC</div><div class="v">${formatMoney(t.ttc, d.devise)}</div></div>
+      </div>
+    </div>
+    <div class="doc-section"><h4>Conditions</h4><div class="doc-note">${escapeHtml(d.conditions||'—')}</div></div>
+  `;
+}
+function generateDevisDoc() {
+  if (!S.devis.projet || !S.devis.client) { flash('Projet et client sont obligatoires pour générer le devis.', 'error'); return; }
+  const html = devisHTML(S.devis);
+  const doc = {
+    id: uid('doc'),
+    type: 'devis',
+    name: `Devis - ${S.devis.projet}`,
+    projectId: S.devis.projectId || '',
+    projectName: S.devis.projet,
+    sourceData: structuredClone(S.devis),
+    htmlPreview: html,
+    summary: devisTotals(S.devis),
+    createdAt: nowISO(), updatedAt: nowISO(), schemaVersion: 2
+  };
+  S.documents.unshift(doc); saveState(); flash('Devis généré.', 'ok'); showView('history');
+}
+
+function renderHistory() {
+  return `
+    <div class="topbar">
+      <div class="title-wrap"><h2>Historique</h2><p>Documents générés avec leurs données source.</p></div>
+      <div class="top-actions"><button class="btn-secondary" onclick="showView('dashboard')">Retour dashboard</button></div>
+    </div>
+    ${renderFlash()}
+    <div class="card">
+      ${S.documents.length ? `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Nom</th><th>Projet</th><th>Date</th><th></th></tr></thead>
+          <tbody>
+            ${S.documents.map(d=>`
+              <tr>
+                <td>${escapeHtml(d.type)}</td>
+                <td>${escapeHtml(d.name)}</td>
+                <td>${escapeHtml(d.projectName || '—')}</td>
+                <td>${new Date(d.createdAt).toLocaleString('fr-FR')}</td>
+                <td><button class="btn-secondary" onclick="previewDoc('${d.id}')">Voir</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>` : `<div class="empty">Aucun document généré.</div>`}
+    </div>
+    <div id="historyPreview" style="margin-top:18px;"></div>
+  `;
+}
+function previewDoc(id) {
+  const d = S.documents.find(x => x.id === id);
+  const el = document.getElementById('historyPreview');
+  if (!d || !el) return;
+  el.innerHTML = `<div class="card"><div class="section-title"><h3>${escapeHtml(d.name)}</h3><span class="muted small">${escapeHtml(d.type)}</span></div><div class="doc-preview">${d.htmlPreview || ''}</div></div>`;
+}
+
+function exportBackup() {
+  saveState();
+  const raw = localStorage.getItem(STORAGE_KEY) || '{}';
+  const blob = new Blob([raw], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `zafbat-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importBackup(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(String(reader.result || '{}'));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      loadState();
+      flash('Backup importé.', 'ok');
+      showView('dashboard');
+    } catch (e) {
+      flash('JSON invalide.', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+loadState();
+</script>
+</body>
+</html>
