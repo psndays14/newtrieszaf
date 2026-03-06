@@ -1,0 +1,2199 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZAF BAT · Operations Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F1E7; --s1:#FFFFFF; --s2:#FBF7F0; --s3:#F3EDE2;
+  --border:#E7DDCF; --border2:#DCCEBB;
+  --text:#1D1A16; --muted:#7A6E61; --muted2:#4F463D;
+  --amber:#C89B2D; --amber2:#DAB45B;
+  --amberbg:rgba(200,155,45,.12); --amberglow:rgba(200,155,45,.18);
+  --green:#1E8E5A; --greenbg:rgba(30,142,90,.10);
+  --red:#B23A3A; --redbg:rgba(178,58,58,.10);
+  --blue:#2F6DA5; --bluebg:rgba(47,109,165,.10);
+  --orange:#B9682A; --orangebg:rgba(185,104,42,.10);
+  --shadow:0 16px 40px rgba(0,0,0,.08);
+  --r:14px;
+  --mono:'IBM Plex Mono',monospace;
+  --display:'Outfit',sans-serif;
+  --logo:'Bebas Neue',sans-serif;
+  --sidebar:248px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--display);-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(1200px 540px at 12% -12%, rgba(200,155,45,.10) 0%, transparent 60%),
+  radial-gradient(900px 480px at 88% 115%, rgba(47,109,165,.07) 0%, transparent 55%);
+pointer-events:none;z-index:0}
+.hidden{display:none !important}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.app-shell,.unlock-screen,.toast-stack,.modal-backdrop{position:relative;z-index:1}
+.unlock-screen{position:fixed;inset:0;display:grid;place-items:center;padding:20px}
+.auth-card{width:min(460px, calc(100vw - 32px));background:var(--s1);border:1px solid var(--border2);border-radius:20px;box-shadow:0 26px 70px rgba(0,0,0,.14);overflow:hidden}
+.auth-top{padding:34px 36px 26px;border-bottom:1px solid var(--border);background:linear-gradient(160deg, rgba(200,155,45,.06), transparent 60%)}
+.brand-line{display:flex;align-items:flex-start;gap:10px}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);margin-top:12px}
+.brand-name{font-family:var(--logo);font-size:54px;line-height:1;letter-spacing:2px}
+.brand-tag{font-family:var(--mono);font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.auth-body{padding:28px 36px 32px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.form-row label{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted)}
+.req{color:var(--amber)}
+input,select,textarea{
+  background:var(--s2);border:1px solid var(--border2);color:var(--text);
+  border-radius:10px;padding:11px 13px;outline:none;transition:.16s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(200,155,45,.10)}
+textarea{min-height:90px;resize:vertical;line-height:1.5}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A6E61' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+.btn{border:none;border-radius:10px;padding:11px 14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s;font-weight:600}
+.btn-primary{background:var(--amber);color:#0F0D08;box-shadow:0 8px 20px rgba(200,155,45,.18)}
+.btn-primary:hover{background:var(--amber2);transform:translateY(-1px)}
+.btn-secondary{background:var(--s2);color:var(--muted2);border:1px solid var(--border2)}
+.btn-secondary:hover{background:var(--s3)}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border)}
+.btn-danger{background:var(--redbg);color:var(--red);border:1px solid rgba(178,58,58,.2)}
+.btn-success{background:var(--greenbg);color:var(--green);border:1px solid rgba(30,142,90,.2)}
+.btn.small{padding:8px 11px;font-size:12px;border-radius:9px}
+.auth-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.auth-note,.micro{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.6}
+.error{color:var(--red)}
+.warning{color:var(--orange)}
+.success{color:var(--green)}
+.app-shell{display:grid;grid-template-columns:var(--sidebar) 1fr;height:100vh}
+.sidebar{
+  background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:auto
+}
+.sb-head{padding:22px 18px 18px;border-bottom:1px solid var(--border)}
+.sb-brand{display:flex;align-items:flex-start;gap:10px}
+.sb-brand .brand-name{font-size:30px}
+.sb-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.sb-nav{padding:14px 10px;display:flex;flex-direction:column;gap:6px}
+.nav-section{padding:12px 8px 2px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2.2px;text-transform:uppercase}
+.nav-btn{
+  display:flex;align-items:center;gap:12px;text-align:left;padding:11px 12px;border:none;background:none;
+  border-radius:12px;color:var(--muted2);font-size:14px
+}
+.nav-btn:hover{background:var(--s2)}
+.nav-btn.active{background:var(--amberbg);color:var(--text)}
+.nav-btn .count{margin-left:auto;font-family:var(--mono);font-size:10px;padding:3px 7px;border-radius:999px;background:var(--s2);border:1px solid var(--border)}
+.sb-foot{margin-top:auto;padding:14px;border-top:1px solid var(--border);display:grid;gap:8px}
+.shell-main{display:flex;flex-direction:column;min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:5;padding:18px 26px 14px;border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.80);backdrop-filter:blur(10px);display:flex;align-items:flex-start;justify-content:space-between;gap:16px
+}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:12px;height:1px;background:var(--amber)}
+.view-title{font-size:34px;line-height:1.05;letter-spacing:.4px;margin-top:6px}
+.view-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.content{padding:22px 26px 28px;overflow:auto}
+.card{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 4px 14px rgba(0,0,0,.03)
+}
+.section-title{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.section-title .label{font-family:var(--mono);font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:var(--muted)}
+.section-title::after{content:'';height:1px;flex:1;background:var(--border)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{padding:18px;position:relative;overflow:hidden}
+.kpi .value{font-size:42px;line-height:1;letter-spacing:.5px}
+.kpi .label{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.kpi .line{position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--amber),transparent)}
+.kpi.blue .line{background:linear-gradient(90deg,var(--blue),transparent)}
+.kpi.green .line{background:linear-gradient(90deg,var(--green),transparent)}
+.kpi.orange .line{background:linear-gradient(90deg,var(--orange),transparent)}
+.grid-main{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.pane{padding:18px}
+.list-pane{display:grid;gap:10px;max-height:calc(100vh - 250px);overflow:auto}
+.entity-card{
+  border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--s2);cursor:pointer;transition:.14s
+}
+.entity-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.entity-card.active{background:var(--amberbg);border-color:rgba(200,155,45,.22)}
+.entity-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.entity-title{font-size:18px;line-height:1.15}
+.entity-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
+.badge{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-family:var(--mono);
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border)
+}
+.badge.info{background:var(--bluebg);border-color:rgba(47,109,165,.16);color:var(--blue)}
+.badge.ok{background:var(--greenbg);border-color:rgba(30,142,90,.16);color:var(--green)}
+.badge.warn{background:var(--orangebg);border-color:rgba(185,104,42,.16);color:var(--orange)}
+.badge.danger{background:var(--redbg);border-color:rgba(178,58,58,.16);color:var(--red)}
+.badge.neutral{background:var(--s2);color:var(--muted2)}
+.stack{display:grid;gap:12px}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.muted-box{
+  border:1px solid var(--border);border-radius:12px;background:var(--s2);padding:12px
+}
+.muted-box .label{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.muted-box .value{font-size:14px;font-weight:500}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px;background:var(--s1)}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:11px 13px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;font-size:13px}
+th{background:rgba(0,0,0,.025);font-family:var(--mono);font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:none}
+.summary-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 16px;
+  border:1px solid rgba(200,155,45,.14);border-radius:12px;background:linear-gradient(135deg, rgba(200,155,45,.08), rgba(200,155,45,.03))
+}
+.summary-bar .big{font-size:28px;color:var(--amber)}
+.lines-editor,.reserves-editor,.audit-editor,.situation-editor{display:grid;gap:10px}
+.line-card,.reserve-card,.audit-card,.situation-card{
+  border:1px solid var(--border);border-radius:12px;background:var(--s2);padding:12px
+}
+.inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.split-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.split-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.preview-shell{display:grid;grid-template-columns:380px 1fr;gap:14px;align-items:start}
+.preview-frame{
+  width:100%;min-height:1080px;border:1px solid var(--border);border-radius:16px;background:var(--s1)
+}
+.doc-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.helper{font-size:12px;color:var(--muted);line-height:1.6}
+.activity-list{display:grid;gap:10px}
+.activity-item{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--s2)}
+.activity-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:6px}
+.topline{display:flex;justify-content:space-between;gap:12px;align-items:center}
+hr.sep{border:none;border-top:1px solid var(--border);margin:6px 0 2px}
+.toast-stack{position:fixed;right:16px;bottom:16px;display:grid;gap:8px}
+.toast{padding:12px 14px;border-radius:12px;background:var(--s1);border:1px solid var(--border);box-shadow:var(--shadow);font-size:13px}
+.toast.ok{border-color:rgba(30,142,90,.2)}
+.toast.error{border-color:rgba(178,58,58,.2)}
+.file-input{padding:9px;background:var(--s2);border:1px dashed var(--border2);border-radius:12px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(29,26,22,.26);display:grid;place-items:center;padding:20px}
+.modal{
+  width:min(520px, calc(100vw - 32px));background:var(--s1);border:1px solid var(--border);border-radius:18px;
+  padding:18px;box-shadow:0 32px 80px rgba(0,0,0,.18)
+}
+.empty-state{padding:26px;border:1px dashed var(--border2);border-radius:16px;background:rgba(255,255,255,.5);text-align:center;color:var(--muted)}
+.text-right{text-align:right}
+@media (max-width:1180px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid-main,.preview-shell{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .app-shell{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(86vw,320px);transform:translateX(-100%);transition:.2s;box-shadow:0 40px 80px rgba(0,0,0,.14)}
+  .sidebar.show{transform:translateX(0)}
+  .topbar{padding-left:18px;padding-right:18px}
+  .content{padding:18px}
+  .info-grid,.split-2,.split-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="unlock-screen" id="unlockScreen">
+  <div class="auth-card">
+    <div class="auth-top">
+      <div class="brand-line">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="brand-name">ZAF BAT</div>
+          <div class="brand-tag">Operations Suite · Local Vault Edition</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-body">
+      <div id="createVaultView" class="hidden">
+        <div style="font-size:22px;font-weight:600;margin-bottom:8px">Créer le coffre local</div>
+        <p class="helper" style="margin:0 0 16px">Cette version chiffre les données métier dans le navigateur avec votre phrase secrète. Sur GitHub Pages, cela reste une application statique : ce n’est pas une sécurité serveur, mais c’est nettement plus sérieux qu’un mot de passe codé en dur.</p>
+        <div class="grid-2">
+          <div class="form-row">
+            <label>Nom société</label>
+            <input id="createCompanyName" value="ZAF BAT" />
+          </div>
+          <div class="form-row">
+            <label>Signataire principal</label>
+            <input id="createSignatory" value="Ahmed Yassine Fliyou" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Phrase secrète <span class="req">*</span></label>
+          <input type="password" id="createPassphrase" placeholder="Minimum 10 caractères" />
+        </div>
+        <div class="form-row">
+          <label>Confirmer la phrase secrète <span class="req">*</span></label>
+          <input type="password" id="createPassphrase2" placeholder="Répéter la phrase secrète" />
+        </div>
+        <div class="auth-actions">
+          <button class="btn btn-primary" id="btnCreateVault">Créer et ouvrir</button>
+        </div>
+        <div class="auth-note" id="createVaultMessage" style="margin-top:12px"></div>
+      </div>
+
+      <div id="unlockVaultView" class="hidden">
+        <div style="font-size:22px;font-weight:600;margin-bottom:8px">Déverrouiller le coffre</div>
+        <p class="helper" style="margin:0 0 16px">La phrase secrète n’est jamais enregistrée. Elle sert uniquement à dériver la clé qui déchiffre le coffre local pendant la session.</p>
+        <div class="form-row">
+          <label>Phrase secrète <span class="req">*</span></label>
+          <input type="password" id="unlockPassphrase" placeholder="Entrer la phrase secrète" />
+        </div>
+        <div class="auth-actions">
+          <button class="btn btn-primary" id="btnUnlockVault">Ouvrir</button>
+          <button class="btn btn-secondary" id="btnResetVault">Réinitialiser le coffre</button>
+        </div>
+        <div class="auth-note" id="unlockVaultMessage" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-shell hidden" id="appShell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div class="sb-brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="brand-name">ZAF BAT</div>
+          <div class="sb-sub">Corporate Operations & Document Control</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-section">Pilotage</div>
+      <button class="nav-btn active" data-view="overview">
+        <span>Vue générale</span><span class="count" id="countOverview">—</span>
+      </button>
+      <div class="nav-section">Base métier</div>
+      <button class="nav-btn" data-view="clients">
+        <span>Clients</span><span class="count" id="countClients">0</span>
+      </button>
+      <button class="nav-btn" data-view="projects">
+        <span>Projets</span><span class="count" id="countProjects">0</span>
+      </button>
+      <button class="nav-btn" data-view="documents">
+        <span>Documents</span><span class="count" id="countDocuments">0</span>
+      </button>
+      <div class="nav-section">Contrôle</div>
+      <button class="nav-btn" data-view="settings">
+        <span>Paramètres</span><span class="count">Vault</span>
+      </button>
+    </nav>
+    <div class="sb-foot">
+      <button class="btn btn-secondary small" id="btnLockNow">Verrouiller</button>
+      <button class="btn btn-ghost small" id="btnToggleSidebar">Fermer le menu</button>
+    </div>
+  </aside>
+
+  <main class="shell-main">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow" id="viewEyebrow">Pilotage</div>
+        <div class="view-title" id="viewTitle">Vue générale</div>
+        <div class="view-sub" id="viewSub">KPIs, activité récente, pipeline documentaire</div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-secondary small" id="btnMobileMenu">Menu</button>
+        <button class="btn btn-secondary small" id="btnQuickNewClient">Nouveau client</button>
+        <button class="btn btn-secondary small" id="btnQuickNewProject">Nouveau projet</button>
+        <button class="btn btn-primary small" id="btnQuickOpenDocs">Nouveau document</button>
+      </div>
+    </header>
+    <div class="content" id="appContent"></div>
+  </main>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+<div class="modal-backdrop hidden" id="confirmModalBackdrop">
+  <div class="modal">
+    <div style="font-size:20px;font-weight:600;margin-bottom:8px" id="confirmTitle">Confirmer</div>
+    <div class="helper" id="confirmBody">Êtes-vous sûr ?</div>
+    <div class="auth-actions" style="margin-top:16px">
+      <button class="btn btn-secondary" id="confirmCancel">Annuler</button>
+      <button class="btn btn-danger" id="confirmOk">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "zafbat_secure_vault_v2";
+  const VERSION = 2;
+  const APP = {
+    key: null,
+    vaultMeta: null,
+    data: null,
+    view: "overview",
+    selectedClientId: null,
+    selectedProjectId: null,
+    selectedDocumentId: null,
+    toasts: [],
+    autoLockMinutes: 15,
+    confirmHandler: null,
+    previewHtml: "",
+    draft: null
+  };
+
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const esc = (v = "") => String(v)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+  const uid = (prefix = "id") => `${prefix}_${crypto.randomUUID()}`;
+  const nowIso = () => new Date().toISOString();
+  const today = () => new Date().toISOString().slice(0, 10);
+  const humanDate = (value) => value ? new Date(value).toLocaleDateString("fr-FR") : "—";
+  const humanDateTime = (value) => value ? new Date(value).toLocaleString("fr-FR") : "—";
+  const money = (value) => new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD", maximumFractionDigits: 2 }).format(Number(value || 0));
+  const num = (value, fallback = 0) => {
+    const parsed = Number(String(value ?? "").replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  const slug = (v = "") => String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-");
+  const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+  const downloadFile = (name, content, type = "text/html;charset=utf-8") => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  };
+
+  function toast(message, kind = "ok") {
+    const item = { id: uid("toast"), message, kind };
+    APP.toasts.push(item);
+    renderToasts();
+    setTimeout(() => {
+      APP.toasts = APP.toasts.filter(x => x.id !== item.id);
+      renderToasts();
+    }, 3200);
+  }
+
+  function renderToasts() {
+    qs("#toastStack").innerHTML = APP.toasts.map(t => `<div class="toast ${esc(t.kind)}">${esc(t.message)}</div>`).join("");
+  }
+
+  function showConfirm({ title = "Confirmer", body = "Êtes-vous sûr ?", onConfirm }) {
+    APP.confirmHandler = onConfirm;
+    qs("#confirmTitle").textContent = title;
+    qs("#confirmBody").textContent = body;
+    qs("#confirmModalBackdrop").classList.remove("hidden");
+  }
+  function closeConfirm() {
+    APP.confirmHandler = null;
+    qs("#confirmModalBackdrop").classList.add("hidden");
+  }
+
+  async function deriveKey(passphrase, salt) {
+    const baseKey = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(passphrase),
+      "PBKDF2",
+      false,
+      ["deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt, iterations: 200000, hash: "SHA-256" },
+      baseKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
+  function base64ToUint8Array(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+
+  async function encryptObject(object, key) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(JSON.stringify(object));
+    const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded);
+    return {
+      iv: arrayBufferToBase64(iv),
+      cipher: arrayBufferToBase64(cipher)
+    };
+  }
+
+  async function decryptObject(payload, key) {
+    const plain = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: base64ToUint8Array(payload.iv) },
+      key,
+      base64ToUint8Array(payload.cipher)
+    );
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  function generateRef(prefix) {
+    const count = APP.data.counters.documents++;
+    const datePart = new Date().toISOString().slice(2, 10).replaceAll("-", "");
+    return `ZB-${prefix}-${datePart}-${String(count).padStart(4, "0")}`;
+  }
+
+  function nextEntityRef(type) {
+    APP.data.counters[type] += 1;
+    const datePart = new Date().toISOString().slice(2, 10).replaceAll("-", "");
+    return `ZB-${type.toUpperCase()}-${datePart}-${String(APP.data.counters[type]).padStart(3, "0")}`;
+  }
+
+  function baseClient() {
+    return {
+      id: uid("client"),
+      ref: nextEntityRef("client"),
+      type: "particulier",
+      legalName: "",
+      contactName: "",
+      email: "",
+      phone: "",
+      city: "Casablanca",
+      address: "",
+      taxId: "",
+      status: "actif",
+      notes: "",
+      createdAt: nowIso(),
+      updatedAt: nowIso()
+    };
+  }
+
+  function baseProject(clientId = "") {
+    const linkedClient = APP.data.clients.find(c => c.id === clientId);
+    return {
+      id: uid("project"),
+      ref: nextEntityRef("project"),
+      clientId: linkedClient?.id || "",
+      title: "",
+      address: "",
+      city: linkedClient?.city || "Casablanca",
+      category: "Villa",
+      surface: "",
+      architect: "",
+      budgetHT: "",
+      status: "prospection",
+      signedBy: APP.data.company.primarySignatory,
+      startCondition: "Acompte encaissé, plans validés, accès chantier effectif, zones libérées, autorisations disponibles.",
+      notes: "",
+      createdAt: nowIso(),
+      updatedAt: nowIso()
+    };
+  }
+
+  function baseDraft() {
+    const project = APP.data.projects[0] || null;
+    return {
+      type: "devis",
+      projectId: project?.id || "",
+      title: "",
+      validityDays: 15,
+      tva: 20,
+      discountPct: 0,
+      depositPct: 30,
+      delay: "12 semaines",
+      startCondition: project?.startCondition || "Acompte encaissé, plans validés, accès chantier effectif, zones libérées, autorisations disponibles.",
+      paymentTerms: "30% à la commande · 40% en cours d’exécution · 30% à la réception.",
+      specialNotes: "",
+      signatory: APP.data.company.primarySignatory,
+      changeDescription: "Adaptation de périmètre validée entre les parties.",
+      quoteLines: [
+        { id: uid("ql"), description: "Gros œuvre principal", unit: "forfait", qty: 1, pu: 1200000 },
+        { id: uid("ql"), description: "Second œuvre & finitions", unit: "forfait", qty: 1, pu: 950000 }
+      ],
+      situationLines: [
+        { id: uid("sl"), post: "Gros œuvre", market: 1200000, previous: 500000, period: 250000 },
+        { id: uid("sl"), post: "Second œuvre", market: 950000, previous: 120000, period: 180000 }
+      ],
+      reserves: [
+        { id: uid("rv"), reserve: "Retouches ponctuelles peinture", location: "Suite parentale", action: "Reprise finition", delay: "7 jours" }
+      ],
+      auditRows: [
+        { id: uid("ar"), zone: "Façade Ouest", point: "Étanchéité", constat: "Joint périphérique incomplet", status: "À corriger", action: "Compléter et contrôler", responsible: "ZAF BAT", deadline: today() }
+      ]
+    };
+  }
+
+  function seedData(companyName, signatory) {
+    const data = {
+      version: VERSION,
+      company: {
+        name: companyName || "ZAF BAT",
+        primarySignatory: signatory || "Ahmed Yassine Fliyou",
+        city: "Casablanca",
+        email: "contact@zafbat.ma",
+        phone: "+212 6 00 00 00 00",
+        address: "Casablanca, Maroc",
+        legalFooter: "Document interne / version client. Les clauses détaillées figurent dans les pièces contractuelles référencées.",
+        clientClausesParticulier: [
+          "Les prestations se limitent strictement au périmètre décrit et à ses annexes référencées.",
+          "Le délai ne court qu’après acompte, validations, accès chantier et prérequis de démarrage.",
+          "Toute demande complémentaire, adaptation ou découverte technique entraîne une régularisation préalable sur coût et délai."
+        ],
+        clientClausesSociete: [
+          "Aucun échange informel non régularisé ne peut élargir le périmètre, le prix ou le délai.",
+          "Toute variation de quantité, méthode, séquence ou spécification donne lieu à avenant écrit.",
+          "En cas de blocage, de non-paiement ou d’absence de validation, la suspension proroge le délai et ouvre droit à régularisation."
+        ]
+      },
+      counters: { client: 0, project: 0, documents: 0 },
+      clients: [],
+      projects: [],
+      documents: [],
+      activity: [],
+      settings: {
+        lockOnHidden: true,
+        autoLockMinutes: 15
+      }
+    };
+
+    APP.data = data;
+    const client1 = baseClient();
+    Object.assign(client1, {
+      type: "particulier",
+      legalName: "El Mansouri",
+      contactName: "Khalid El Mansouri",
+      email: "k.elmansouri@example.ma",
+      phone: "+212 6 11 22 33 44",
+      city: "Casablanca",
+      address: "Bouskoura, Lotissement Vert",
+      notes: "Client premium orienté qualité et visibilité budgétaire."
+    });
+    data.clients.push(client1);
+
+    const client2 = baseClient();
+    Object.assign(client2, {
+      type: "societe",
+      legalName: "Atlas Capital Development",
+      contactName: "Sara Benjelloun",
+      email: "s.benjelloun@atlascap.ma",
+      phone: "+212 6 88 77 66 55",
+      city: "Rabat",
+      address: "Hay Riad, Rabat",
+      taxId: "ICE 001234567000089",
+      notes: "Promoteur / donneur d’ordre structuré."
+    });
+    data.clients.push(client2);
+
+    const project1 = baseProject(client1.id);
+    Object.assign(project1, {
+      title: "Villa El Mansouri — Bouskoura",
+      address: "Bouskoura, Lotissement Vert",
+      category: "Villa",
+      surface: "480",
+      architect: "Cabinet A. Nouiri",
+      budgetHT: "2150000",
+      status: "actif",
+      notes: "Projet résidentiel haut de gamme."
+    });
+    data.projects.push(project1);
+
+    const project2 = baseProject(client2.id);
+    Object.assign(project2, {
+      title: "Rénovation siège Atlas Capital",
+      address: "Hay Riad, Rabat",
+      category: "Bureaux",
+      surface: "640",
+      architect: "Studio Ligne Claire",
+      budgetHT: "1480000",
+      status: "prospection",
+      notes: "Dossier société avec validation multi-intervenants."
+    });
+    data.projects.push(project2);
+
+    APP.draft = baseDraft();
+    APP.draft.projectId = project1.id;
+    addActivity("Coffre initialisé", "système", "Le coffre local chiffré a été créé avec les données de démonstration.");
+    addActivity("Données de démonstration", "système", "Deux clients, deux projets et le studio documentaire ont été préparés.");
+    return data;
+  }
+
+  function addActivity(action, scope, detail) {
+    if (!APP.data) return;
+    APP.data.activity.unshift({
+      id: uid("act"),
+      at: nowIso(),
+      action,
+      scope,
+      detail
+    });
+    APP.data.activity = APP.data.activity.slice(0, 40);
+  }
+
+  async function persist() {
+    if (!APP.key || !APP.data) return;
+    APP.data.version = VERSION;
+    APP.data.settings.autoLockMinutes = APP.autoLockMinutes;
+    const salt = APP.vaultMeta?.salt ? base64ToUint8Array(APP.vaultMeta.salt) : crypto.getRandomValues(new Uint8Array(16));
+    const encrypted = await encryptObject(APP.data, APP.key);
+    const payload = {
+      version: VERSION,
+      salt: arrayBufferToBase64(salt),
+      cipher: encrypted.cipher,
+      iv: encrypted.iv,
+      updatedAt: nowIso()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    APP.vaultMeta = payload;
+    updateCounters();
+  }
+
+  async function createVault() {
+    const companyName = qs("#createCompanyName").value.trim() || "ZAF BAT";
+    const signatory = qs("#createSignatory").value.trim() || "Ahmed Yassine Fliyou";
+    const pass1 = qs("#createPassphrase").value;
+    const pass2 = qs("#createPassphrase2").value;
+    const msg = qs("#createVaultMessage");
+    msg.className = "auth-note";
+    if (pass1.length < 10) {
+      msg.textContent = "La phrase secrète doit contenir au moins 10 caractères.";
+      msg.classList.add("error");
+      return;
+    }
+    if (pass1 !== pass2) {
+      msg.textContent = "Les deux phrases secrètes ne correspondent pas.";
+      msg.classList.add("error");
+      return;
+    }
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const key = await deriveKey(pass1, salt);
+    APP.key = key;
+    APP.data = seedData(companyName, signatory);
+    APP.vaultMeta = { salt: arrayBufferToBase64(salt) };
+    APP.autoLockMinutes = APP.data.settings.autoLockMinutes;
+    await persist();
+    unlockSession();
+    toast("Coffre créé et ouvert.");
+  }
+
+  async function unlockVault() {
+    const passphrase = qs("#unlockPassphrase").value;
+    const msg = qs("#unlockVaultMessage");
+    msg.className = "auth-note";
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      msg.textContent = "Aucun coffre trouvé.";
+      msg.classList.add("error");
+      return;
+    }
+    try {
+      const payload = JSON.parse(raw);
+      const key = await deriveKey(passphrase, base64ToUint8Array(payload.salt));
+      const data = await decryptObject(payload, key);
+      APP.key = key;
+      APP.vaultMeta = payload;
+      APP.data = data;
+      APP.autoLockMinutes = APP.data.settings?.autoLockMinutes || 15;
+      APP.draft = baseDraft();
+      unlockSession();
+      toast("Coffre déverrouillé.");
+    } catch (error) {
+      msg.textContent = "Phrase secrète invalide ou coffre corrompu.";
+      msg.classList.add("error");
+    }
+  }
+
+  function lockSession(message = "Session verrouillée.") {
+    APP.key = null;
+    APP.data = null;
+    APP.selectedClientId = null;
+    APP.selectedProjectId = null;
+    APP.selectedDocumentId = null;
+    APP.previewHtml = "";
+    qs("#appShell").classList.add("hidden");
+    qs("#unlockScreen").classList.remove("hidden");
+    qs("#unlockPassphrase").value = "";
+    bootAuthView();
+    if (message) toast(message);
+  }
+
+  function unlockSession() {
+    qs("#unlockScreen").classList.add("hidden");
+    qs("#appShell").classList.remove("hidden");
+    APP.selectedClientId = APP.data.clients[0]?.id || null;
+    APP.selectedProjectId = APP.data.projects[0]?.id || null;
+    APP.selectedDocumentId = APP.data.documents[0]?.id || null;
+    APP.view = "overview";
+    if (!APP.draft) APP.draft = baseDraft();
+    render();
+    armInactivityLock();
+  }
+
+  let inactivityTimer = null;
+  function armInactivityLock() {
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+      if (APP.key) lockSession("Session verrouillée après inactivité.");
+    }, APP.autoLockMinutes * 60 * 1000);
+  }
+
+  ["click", "keydown", "mousemove", "touchstart"].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (APP.key) armInactivityLock();
+    }, { passive: true });
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && APP.key && APP.data?.settings?.lockOnHidden) {
+      lockSession("Session verrouillée à la mise en arrière-plan.");
+    }
+  });
+
+  function bootAuthView() {
+    const hasVault = !!localStorage.getItem(STORAGE_KEY);
+    qs("#createVaultView").classList.toggle("hidden", hasVault);
+    qs("#unlockVaultView").classList.toggle("hidden", !hasVault);
+  }
+
+  function updateCounters() {
+    if (!APP.data) return;
+    qs("#countClients").textContent = String(APP.data.clients.length);
+    qs("#countProjects").textContent = String(APP.data.projects.length);
+    qs("#countDocuments").textContent = String(APP.data.documents.length);
+    qs("#countOverview").textContent = `${APP.data.activity.length}`;
+  }
+
+  function clientById(id) {
+    return APP.data.clients.find(c => c.id === id) || null;
+  }
+
+  function projectById(id) {
+    return APP.data.projects.find(p => p.id === id) || null;
+  }
+
+  function docById(id) {
+    return APP.data.documents.find(d => d.id === id) || null;
+  }
+
+  function projectClient(project) {
+    return project ? clientById(project.clientId) : null;
+  }
+
+  function totalsFromQuoteLines(lines, discountPct, tvaPct) {
+    const gross = lines.reduce((sum, line) => sum + num(line.qty) * num(line.pu), 0);
+    const discount = gross * (num(discountPct) / 100);
+    const net = gross - discount;
+    const tva = net * (num(tvaPct) / 100);
+    return { gross, discount, net, tva, total: net + tva };
+  }
+
+  function situationTotals(lines) {
+    return lines.reduce((acc, line) => {
+      acc.market += num(line.market);
+      acc.previous += num(line.previous);
+      acc.period += num(line.period);
+      acc.cumulative += num(line.previous) + num(line.period);
+      return acc;
+    }, { market: 0, previous: 0, period: 0, cumulative: 0 });
+  }
+
+  function statusBadge(status) {
+    const map = {
+      actif: "ok",
+      prospection: "warn",
+      signe: "info",
+      brouillon: "neutral",
+      genere: "ok",
+      archive: "neutral",
+      envoye: "info",
+      termine: "ok"
+    };
+    return `<span class="badge ${map[slug(status)] || "neutral"}">${esc(status)}</span>`;
+  }
+
+  function templateBase({ title, subtitle, project, client, metaRight, body }) {
+    return `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>${esc(title)}</title>
+<style>
+  :root{
+    --bg:#F6F1E7; --card:#ffffff; --muted:#7A6E61; --text:#1D1A16; --border:#E7DDCF; --accent:#C89B2D; --soft:rgba(200,155,45,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:34px;font-family:Arial, Helvetica, sans-serif;color:var(--text);background:var(--bg);font-size:13px;line-height:1.6}
+  .sheet{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+  .top{padding:28px 32px 22px;border-bottom:1px solid var(--border);background:linear-gradient(145deg, rgba(200,155,45,.05), transparent 60%)}
+  .brand{font-size:34px;letter-spacing:2px;font-weight:700}
+  .subbrand{font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+  .title-grid{display:grid;grid-template-columns:1.4fr .8fr;gap:20px;margin-top:22px}
+  .doc-title{font-size:28px;line-height:1.1;font-weight:700}
+  .doc-sub{font-family:monospace;font-size:11px;color:var(--muted);margin-top:8px}
+  .meta-card{padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--soft)}
+  .meta-label{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .meta-value{font-size:16px;font-weight:700;color:var(--accent)}
+  .body{padding:24px 32px 28px}
+  .section{margin-bottom:18px}
+  .section h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .box{border:1px solid var(--border);border-radius:14px;padding:12px;background:#fcfaf5}
+  .label{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .value{font-size:14px;font-weight:600}
+  table{width:100%;border-collapse:collapse}
+  th,td{border-bottom:1px solid var(--border);padding:9px 10px;text-align:left;vertical-align:top}
+  th{background:#faf6ed;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  .num{text-align:right;font-family:monospace}
+  ul{padding-left:18px;margin:8px 0}
+  .summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:var(--soft)}
+  .summary .big{font-size:24px;font-weight:700;color:var(--accent)}
+  .sign{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+  .sign .box{min-height:112px}
+  .footer{padding:16px 32px 24px;font-size:11px;color:var(--muted)}
+  .pill{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--soft);border:1px solid rgba(200,155,45,.18);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+  @media print{body{padding:0;background:white}.sheet{border:none;border-radius:0}}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="top">
+    <div class="brand">${esc(APP.data.company.name)}</div>
+    <div class="subbrand">Construction premium · pilotage documentaire</div>
+    <div class="title-grid">
+      <div>
+        <div class="doc-title">${esc(title)}</div>
+        <div class="doc-sub">${esc(subtitle || "")}</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Référence / version</div>
+        <div class="meta-value">${esc(metaRight)}</div>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="section">
+      <h3>Parties</h3>
+      <div class="grid">
+        <div class="box">
+          <div class="label">Entreprise</div>
+          <div class="value">${esc(APP.data.company.name)}</div>
+          <div>${esc(APP.data.company.address)}</div>
+          <div>${esc(APP.data.company.email)} · ${esc(APP.data.company.phone)}</div>
+        </div>
+        <div class="box">
+          <div class="label">Client / projet</div>
+          <div class="value">${esc(client?.contactName || client?.legalName || "—")}</div>
+          <div>${esc(client?.type === "societe" ? client?.legalName : client?.address || "—")}</div>
+          <div>${esc(project?.title || "—")} · ${esc(project?.city || "—")}</div>
+        </div>
+      </div>
+    </div>
+    ${body}
+  </div>
+  <div class="footer">${esc(APP.data.company.legalFooter)}</div>
+</div>
+</body>
+</html>
+`;
+  }
+
+  function clausesFor(clientType) {
+    const items = clientType === "societe"
+      ? APP.data.company.clientClausesSociete
+      : APP.data.company.clientClausesParticulier;
+    return `<ul>${items.map(item => `<li>${esc(item)}</li>`).join("")}</ul>`;
+  }
+
+  function renderDocumentHtml(snapshot) {
+    const project = snapshot.project;
+    const client = snapshot.client;
+    const clientType = client?.type || "particulier";
+    const totals = totalsFromQuoteLines(snapshot.quoteLines || [], snapshot.discountPct, snapshot.tva);
+    const sitTotals = situationTotals(snapshot.situationLines || []);
+    const commonProjectBoxes = `
+      <div class="section">
+        <h3>Références chantier</h3>
+        <div class="grid">
+          <div class="box"><div class="label">Projet</div><div class="value">${esc(project?.title || "—")}</div><div>${esc(project?.category || "—")} · ${esc(project?.surface || "—")} m²</div></div>
+          <div class="box"><div class="label">Adresse / architecte</div><div class="value">${esc(project?.address || "—")}</div><div>${esc(project?.architect || "—")}</div></div>
+        </div>
+      </div>`;
+
+    if (snapshot.type === "devis") {
+      return templateBase({
+        title: "Devis / Proposition commerciale",
+        subtitle: `${clientType === "societe" ? "Version entreprise / B2B" : "Version client particulier"} · validité ${snapshot.validityDays} jours`,
+        project,
+        client,
+        metaRight: snapshot.ref,
+        body: `
+          ${commonProjectBoxes}
+          <div class="section">
+            <h3>Positionnement</h3>
+            <p>La présente proposition a pour objet de définir de manière claire les prestations prévues, les conditions d’exécution et le cadre financier du projet, afin d’assurer une collaboration lisible, premium et sécurisée.</p>
+          </div>
+          <div class="section">
+            <h3>Prestations chiffrées</h3>
+            <table>
+              <thead><tr><th>Désignation</th><th>Unité</th><th class="num">Qté</th><th class="num">PU HT</th><th class="num">Total HT</th></tr></thead>
+              <tbody>${snapshot.quoteLines.map(line => `<tr><td>${esc(line.description)}</td><td>${esc(line.unit)}</td><td class="num">${num(line.qty).toLocaleString("fr-FR")}</td><td class="num">${money(line.pu)}</td><td class="num">${money(num(line.qty) * num(line.pu))}</td></tr>`).join("")}</tbody>
+            </table>
+          </div>
+          <div class="summary">
+            <div><div class="label">Acompte conseillé</div><div class="value">${num(snapshot.depositPct)}%</div></div>
+            <div><div class="label">Délai prévisionnel</div><div class="value">${esc(snapshot.delay)}</div></div>
+            <div><div class="label">TVA</div><div class="value">${num(snapshot.tva)}%</div></div>
+            <div><div class="label">Total TTC</div><div class="big">${money(totals.total)}</div></div>
+          </div>
+          <div class="section">
+            <h3>Conditions de démarrage</h3>
+            <div class="box">${esc(snapshot.startCondition)}</div>
+          </div>
+          <div class="section">
+            <h3>Clauses structurantes</h3>
+            ${clausesFor(clientType)}
+          </div>
+          ${snapshot.specialNotes ? `<div class="section"><h3>Observations</h3><div class="box">${esc(snapshot.specialNotes)}</div></div>` : ""}
+          <div class="sign">
+            <div class="box"><div class="label">Pour le client</div><div style="margin-top:40px">Nom / date / signature</div></div>
+            <div class="box"><div class="label">Pour ${esc(APP.data.company.name)}</div><div class="value">${esc(snapshot.signatory)}</div><div style="margin-top:24px">Signature / cachet</div></div>
+          </div>
+        `
+      });
+    }
+
+    if (snapshot.type === "contrat") {
+      return templateBase({
+        title: "Contrat de travaux / Marché privé",
+        subtitle: `${clientType === "societe" ? "Cadre B2B structuré" : "Cadre résidentiel premium"} · pièce contractuelle hiérarchisée`,
+        project,
+        client,
+        metaRight: snapshot.ref,
+        body: `
+          ${commonProjectBoxes}
+          <div class="section">
+            <h3>Objet</h3>
+            <p>ZAF BAT intervient dans le cadre strict des prestations expressément décrites dans les pièces contractuelles référencées. Toute prestation non décrite, même connexe ou implicitement attendue, demeure hors périmètre tant qu’elle n’a pas été régularisée par écrit sur coût et délai.</p>
+          </div>
+          <div class="section">
+            <h3>Pièces contractuelles</h3>
+            <div class="box">
+              <ol style="margin:0;padding-left:18px">
+                <li>Le présent contrat</li>
+                <li>Les avenants signés postérieurement</li>
+                <li>Le devis accepté et ses lignes de prix</li>
+                <li>Les plans et annexes techniques validés</li>
+                <li>Le planning prévisionnel et les comptes-rendus de validation</li>
+              </ol>
+            </div>
+          </div>
+          <div class="section">
+            <h3>Base financière</h3>
+            <table>
+              <thead><tr><th>Désignation</th><th>Unité</th><th class="num">Qté</th><th class="num">PU HT</th><th class="num">Total HT</th></tr></thead>
+              <tbody>${snapshot.quoteLines.map(line => `<tr><td>${esc(line.description)}</td><td>${esc(line.unit)}</td><td class="num">${num(line.qty).toLocaleString("fr-FR")}</td><td class="num">${money(line.pu)}</td><td class="num">${money(num(line.qty) * num(line.pu))}</td></tr>`).join("")}</tbody>
+            </table>
+          </div>
+          <div class="summary">
+            <div><div class="label">Paiement</div><div class="value">${esc(snapshot.paymentTerms)}</div></div>
+            <div><div class="label">Délai</div><div class="value">${esc(snapshot.delay)}</div></div>
+            <div><div class="label">Montant HT</div><div class="value">${money(totals.net)}</div></div>
+            <div><div class="label">Montant TTC</div><div class="big">${money(totals.total)}</div></div>
+          </div>
+          <div class="section">
+            <h3>Mécanismes de protection</h3>
+            ${clausesFor(clientType)}
+            <p>En cas de retard de paiement, d’absence de validation, de blocage d’accès, d’instruction contradictoire ou de sujétion technique imprévue, ZAF BAT peut suspendre l’exécution après notification, avec prorogation corrélative du délai et régularisation des coûts directement induits.</p>
+          </div>
+          <div class="section">
+            <h3>Réception</h3>
+            <p>La réception intervient par procès-verbal contradictoire avec ou sans réserves. Les réserves mineures n’empêchant pas l’usage normal des ouvrages concernés n’autorisent ni refus global de réception ni blocage intégral du solde, sous réserve des retenues strictement limitées aux seuls postes réservés si elles ont été expressément convenues.</p>
+          </div>
+          <div class="sign">
+            <div class="box"><div class="label">Client / donneur d’ordre</div><div style="margin-top:40px">Nom / fonction / signature</div></div>
+            <div class="box"><div class="label">ZAF BAT</div><div class="value">${esc(snapshot.signatory)}</div><div style="margin-top:24px">Signature / cachet</div></div>
+          </div>
+        `
+      });
+    }
+
+    if (snapshot.type === "avenant") {
+      const avenantTotal = totalsFromQuoteLines(snapshot.quoteLines || [], 0, snapshot.tva);
+      return templateBase({
+        title: "Avenant / Change Order",
+        subtitle: "Formalisation d’une adaptation sur coût et délai avant exécution",
+        project,
+        client,
+        metaRight: snapshot.ref,
+        body: `
+          ${commonProjectBoxes}
+          <div class="section">
+            <h3>Objet de la modification</h3>
+            <div class="box">${esc(snapshot.changeDescription || "Adaptation technique ou demande complémentaire du client.")}</div>
+          </div>
+          <div class="section">
+            <h3>Détail économique</h3>
+            <table>
+              <thead><tr><th>Désignation</th><th>Unité</th><th class="num">Qté</th><th class="num">PU HT</th><th class="num">Total HT</th></tr></thead>
+              <tbody>${snapshot.quoteLines.map(line => `<tr><td>${esc(line.description)}</td><td>${esc(line.unit)}</td><td class="num">${num(line.qty).toLocaleString("fr-FR")}</td><td class="num">${money(line.pu)}</td><td class="num">${money(num(line.qty) * num(line.pu))}</td></tr>`).join("")}</tbody>
+            </table>
+          </div>
+          <div class="summary">
+            <div><div class="label">Impact délai</div><div class="value">${esc(snapshot.delay)}</div></div>
+            <div><div class="label">TVA</div><div class="value">${num(snapshot.tva)}%</div></div>
+            <div><div class="label">Montant TTC</div><div class="big">${money(avenantTotal.total)}</div></div>
+          </div>
+          <div class="section"><h3>Principe</h3><p>Aucune exécution de la présente modification n’est engagée avant validation écrite du présent avenant et, lorsque requis, règlement de l’acompte spécifique correspondant.</p></div>
+          <div class="sign">
+            <div class="box"><div class="label">Client</div><div style="margin-top:40px">Nom / date / signature</div></div>
+            <div class="box"><div class="label">ZAF BAT</div><div class="value">${esc(snapshot.signatory)}</div><div style="margin-top:24px">Signature / cachet</div></div>
+          </div>
+        `
+      });
+    }
+
+    if (snapshot.type === "situation") {
+      return templateBase({
+        title: "Situation de travaux",
+        subtitle: "Constat d’avancement et base de facturation",
+        project,
+        client,
+        metaRight: snapshot.ref,
+        body: `
+          ${commonProjectBoxes}
+          <div class="section">
+            <h3>Avancement constaté</h3>
+            <table>
+              <thead><tr><th>Poste</th><th class="num">Marché HT</th><th class="num">Cumul précédent</th><th class="num">Période</th><th class="num">Cumul à date</th></tr></thead>
+              <tbody>${snapshot.situationLines.map(line => `<tr><td>${esc(line.post)}</td><td class="num">${money(line.market)}</td><td class="num">${money(line.previous)}</td><td class="num">${money(line.period)}</td><td class="num">${money(num(line.previous) + num(line.period))}</td></tr>`).join("")}</tbody>
+            </table>
+          </div>
+          <div class="summary">
+            <div><div class="label">Marché HT</div><div class="value">${money(sitTotals.market)}</div></div>
+            <div><div class="label">Cumul précédent</div><div class="value">${money(sitTotals.previous)}</div></div>
+            <div><div class="label">Période</div><div class="value">${money(sitTotals.period)}</div></div>
+            <div><div class="label">Cumul à date</div><div class="big">${money(sitTotals.cumulative)}</div></div>
+          </div>
+          <div class="section"><h3>Observation</h3><p>Les quantités ou pourcentages d’avancement indiqués correspondent aux travaux réalisés, constatés ou mesurés à la date du document, sous réserve des métrés finaux et des avenants en cours de régularisation.</p></div>
+          <div class="sign">
+            <div class="box"><div class="label">Visa client / MO</div><div style="margin-top:40px">Nom / fonction / signature</div></div>
+            <div class="box"><div class="label">Visa ZAF BAT</div><div class="value">${esc(snapshot.signatory)}</div><div style="margin-top:24px">Signature / cachet</div></div>
+          </div>
+        `
+      });
+    }
+
+    if (snapshot.type === "pv") {
+      return templateBase({
+        title: "Procès-verbal de réception",
+        subtitle: "Réception contradictoire avec ou sans réserves",
+        project,
+        client,
+        metaRight: snapshot.ref,
+        body: `
+          ${commonProjectBoxes}
+          <div class="section">
+            <h3>Décision</h3>
+            <div class="box">Les parties constatent que les prestations principales sont achevées et en état d’être utilisées conformément à leur destination principale, sous réserve des réserves ci-dessous lorsqu’elles existent.</div>
+          </div>
+          <div class="section">
+            <h3>Réserves</h3>
+            <table>
+              <thead><tr><th>Réserve</th><th>Localisation</th><th>Action</th><th>Délai</th></tr></thead>
+              <tbody>${(snapshot.reserves || []).length ? snapshot.reserves.map(line => `<tr><td>${esc(line.reserve)}</td><td>${esc(line.location)}</td><td>${esc(line.action)}</td><td>${esc(line.delay)}</td></tr>`).join("") : `<tr><td colspan="4">Aucune réserve.</td></tr>`}</tbody>
+            </table>
+          </div>
+          <div class="section"><h3>Effets</h3><p>Les réserves mineures n’empêchant pas l’usage normal n’autorisent pas le blocage intégral du solde. Toute prise de possession ou utilisation des zones concernées vaut acceptation fonctionnelle sous réserve des réserves précisément notifiées.</p></div>
+          <div class="sign">
+            <div class="box"><div class="label">Client</div><div style="margin-top:40px">Nom / date / signature</div></div>
+            <div class="box"><div class="label">ZAF BAT</div><div class="value">${esc(snapshot.signatory)}</div><div style="margin-top:24px">Signature / cachet</div></div>
+          </div>
+        `
+      });
+    }
+
+    return templateBase({
+      title: "Rapport d’audit chantier",
+      subtitle: "Qualité / conformité / actions correctives",
+      project,
+      client,
+      metaRight: snapshot.ref,
+      body: `
+        ${commonProjectBoxes}
+        <div class="section">
+          <h3>Synthèse</h3>
+          <div class="box">${esc(snapshot.specialNotes || "Le chantier présente un état global cohérent avec l’avancement observé, sous réserve des actions correctives listées ci-dessous.")}</div>
+        </div>
+        <div class="section">
+          <h3>Constats</h3>
+          <table>
+            <thead><tr><th>Zone</th><th>Point</th><th>Constat</th><th>Statut</th><th>Action</th><th>Responsable</th><th>Échéance</th></tr></thead>
+            <tbody>${snapshot.auditRows.map(row => `<tr><td>${esc(row.zone)}</td><td>${esc(row.point)}</td><td>${esc(row.constat)}</td><td>${esc(row.status)}</td><td>${esc(row.action)}</td><td>${esc(row.responsible)}</td><td>${esc(row.deadline)}</td></tr>`).join("")}</tbody>
+          </table>
+        </div>
+        <div class="section"><h3>Méthodologie</h3><p>Le présent audit repose sur les éléments visibles et accessibles au jour de la visite. Il ne vaut ni constat destructif ni prise en charge d’éléments non accessibles lors du contrôle.</p></div>
+        <div class="sign">
+          <div class="box"><div class="label">Représentant chantier</div><div style="margin-top:40px">Nom / fonction / signature</div></div>
+          <div class="box"><div class="label">ZAF BAT</div><div class="value">${esc(snapshot.signatory)}</div><div style="margin-top:24px">Signature / cachet</div></div>
+        </div>
+      `
+    });
+  }
+
+  function projectSummary(project) {
+    const client = projectClient(project);
+    return `${project.title || "Projet sans nom"} · ${client?.contactName || client?.legalName || "Client non lié"}`;
+  }
+
+  function renderOverview() {
+    const documentsGenerated = APP.data.documents.length;
+    const projectsActive = APP.data.projects.filter(p => slug(p.status) === "actif").length;
+    const pipelineValue = APP.data.projects.reduce((sum, p) => sum + num(p.budgetHT), 0);
+    const signedValue = APP.data.documents.filter(d => d.type === "contrat").reduce((sum, d) => sum + num(d.snapshot?.totals?.net || 0), 0);
+    return `
+      <div class="kpis">
+        <div class="card kpi"><div class="value">${APP.data.clients.length}</div><div class="label">Clients suivis</div><div class="line"></div></div>
+        <div class="card kpi blue"><div class="value">${APP.data.projects.length}</div><div class="label">Projets</div><div class="line"></div></div>
+        <div class="card kpi green"><div class="value">${documentsGenerated}</div><div class="label">Documents figés</div><div class="line"></div></div>
+        <div class="card kpi orange"><div class="value">${projectsActive}</div><div class="label">Chantiers actifs</div><div class="line"></div></div>
+      </div>
+
+      <div class="grid-main">
+        <section class="card pane">
+          <div class="section-title"><div class="label">Attractivité financière</div></div>
+          <div class="summary-bar">
+            <div><div class="helper">Pipeline HT consolidé</div><div class="big">${money(pipelineValue)}</div></div>
+            <div><div class="helper">Contrats générés HT</div><div style="font-size:20px;font-weight:700">${money(signedValue)}</div></div>
+            <div><div class="helper">Position produit</div><div class="value">single-tenant local, base migrable backend</div></div>
+          </div>
+          <div class="table-wrap" style="margin-top:14px">
+            <table>
+              <thead><tr><th>Projet</th><th>Client</th><th>Statut</th><th class="text-right">Budget HT</th></tr></thead>
+              <tbody>
+                ${APP.data.projects.length ? APP.data.projects.map(project => {
+                  const client = projectClient(project);
+                  return `<tr>
+                    <td>${esc(project.title || "—")}</td>
+                    <td>${esc(client?.contactName || client?.legalName || "—")}</td>
+                    <td>${statusBadge(project.status)}</td>
+                    <td class="text-right">${money(project.budgetHT)}</td>
+                  </tr>`;
+                }).join("") : `<tr><td colspan="4">Aucun projet enregistré.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card pane">
+          <div class="section-title"><div class="label">Journal d’activité</div></div>
+          <div class="activity-list">
+            ${APP.data.activity.length ? APP.data.activity.slice(0, 8).map(act => `
+              <div class="activity-item">
+                <div class="activity-meta">${esc(act.scope)} · ${humanDateTime(act.at)}</div>
+                <div style="font-weight:600">${esc(act.action)}</div>
+                <div class="helper">${esc(act.detail)}</div>
+              </div>`).join("") : `<div class="empty-state">Aucune activité pour le moment.</div>`}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderClients() {
+    const selected = clientById(APP.selectedClientId) || APP.data.clients[0] || baseClient();
+    const cards = APP.data.clients.length ? APP.data.clients.map(client => `
+      <div class="entity-card ${client.id === selected.id ? "active" : ""}" data-select-client="${esc(client.id)}">
+        <div class="entity-head">
+          <div>
+            <div class="entity-title">${esc(client.contactName || client.legalName || "Client sans nom")}</div>
+            <div class="entity-meta">${esc(client.ref)} · ${esc(client.type === "societe" ? client.legalName : client.city || "—")}</div>
+          </div>
+          ${statusBadge(client.status)}
+        </div>
+      </div>
+    `).join("") : `<div class="empty-state">Aucun client enregistré.</div>`;
+
+    return `
+      <div class="grid-main">
+        <section class="card pane">
+          <div class="topline">
+            <div class="section-title" style="margin:0"><div class="label">Portefeuille clients</div></div>
+            <button class="btn btn-secondary small" id="btnNewClient">Nouveau</button>
+          </div>
+          <div class="list-pane" style="margin-top:14px">${cards}</div>
+        </section>
+        <section class="card pane">
+          <div class="topline">
+            <div class="section-title" style="margin:0"><div class="label">Fiche client</div></div>
+            <div class="inline-actions">
+              <button class="btn btn-secondary small" id="btnSaveClient">Enregistrer</button>
+              ${selected.id ? `<button class="btn btn-danger small" id="btnDeleteClient">Supprimer</button>` : ""}
+            </div>
+          </div>
+          <div class="stack" style="margin-top:14px">
+            <div class="split-2">
+              <div class="form-row"><label>Type client</label><select id="client_type">
+                <option value="particulier" ${selected.type === "particulier" ? "selected" : ""}>Particulier</option>
+                <option value="societe" ${selected.type === "societe" ? "selected" : ""}>Société</option>
+              </select></div>
+              <div class="form-row"><label>Statut</label><select id="client_status">
+                ${["actif", "prospection", "archive"].map(status => `<option value="${status}" ${selected.status === status ? "selected" : ""}>${status}</option>`).join("")}
+              </select></div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Nom légal / raison sociale</label><input id="client_legalName" value="${esc(selected.legalName)}" placeholder="Nom ou raison sociale"></div>
+              <div class="form-row"><label>Contact principal</label><input id="client_contactName" value="${esc(selected.contactName)}" placeholder="Nom du contact"></div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Email</label><input id="client_email" value="${esc(selected.email)}" placeholder="contact@client.ma"></div>
+              <div class="form-row"><label>Téléphone</label><input id="client_phone" value="${esc(selected.phone)}" placeholder="+212 ..."></div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Ville</label><input id="client_city" value="${esc(selected.city)}"></div>
+              <div class="form-row"><label>ICE / CIN / référence</label><input id="client_taxId" value="${esc(selected.taxId)}"></div>
+            </div>
+            <div class="form-row"><label>Adresse</label><textarea id="client_address">${esc(selected.address)}</textarea></div>
+            <div class="form-row"><label>Notes</label><textarea id="client_notes">${esc(selected.notes)}</textarea></div>
+            <div class="info-grid">
+              <div class="muted-box"><div class="label">Référence</div><div class="value">${esc(selected.ref || "Brouillon")}</div></div>
+              <div class="muted-box"><div class="label">Mise à jour</div><div class="value">${humanDateTime(selected.updatedAt)}</div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderProjects() {
+    const selected = projectById(APP.selectedProjectId) || APP.data.projects[0] || baseProject();
+    const cards = APP.data.projects.length ? APP.data.projects.map(project => {
+      const client = projectClient(project);
+      return `
+        <div class="entity-card ${project.id === selected.id ? "active" : ""}" data-select-project="${esc(project.id)}">
+          <div class="entity-head">
+            <div>
+              <div class="entity-title">${esc(project.title || "Projet sans titre")}</div>
+              <div class="entity-meta">${esc(project.ref)} · ${esc(client?.contactName || client?.legalName || "Client à lier")}</div>
+            </div>
+            ${statusBadge(project.status)}
+          </div>
+        </div>`;
+    }).join("") : `<div class="empty-state">Aucun projet enregistré.</div>`;
+
+    return `
+      <div class="grid-main">
+        <section class="card pane">
+          <div class="topline">
+            <div class="section-title" style="margin:0"><div class="label">Portefeuille projets</div></div>
+            <button class="btn btn-secondary small" id="btnNewProject">Nouveau</button>
+          </div>
+          <div class="list-pane" style="margin-top:14px">${cards}</div>
+        </section>
+        <section class="card pane">
+          <div class="topline">
+            <div class="section-title" style="margin:0"><div class="label">Fiche projet</div></div>
+            <div class="inline-actions">
+              <button class="btn btn-secondary small" id="btnSaveProject">Enregistrer</button>
+              ${selected.id ? `<button class="btn btn-danger small" id="btnDeleteProject">Supprimer</button>` : ""}
+            </div>
+          </div>
+          <div class="stack" style="margin-top:14px">
+            <div class="split-2">
+              <div class="form-row">
+                <label>Client lié</label>
+                <select id="project_clientId">
+                  <option value="">— Sélectionner —</option>
+                  ${APP.data.clients.map(client => `<option value="${esc(client.id)}" ${selected.clientId === client.id ? "selected" : ""}>${esc(client.contactName || client.legalName)}</option>`).join("")}
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Statut</label>
+                <select id="project_status">
+                  ${["prospection", "actif", "termine", "archive"].map(status => `<option value="${status}" ${selected.status === status ? "selected" : ""}>${status}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Titre projet</label><input id="project_title" value="${esc(selected.title)}" placeholder="Villa ..."></div>
+              <div class="form-row"><label>Catégorie</label><input id="project_category" value="${esc(selected.category)}" placeholder="Villa / Bureaux / Rénovation"></div>
+            </div>
+            <div class="split-3">
+              <div class="form-row"><label>Ville</label><input id="project_city" value="${esc(selected.city)}"></div>
+              <div class="form-row"><label>Surface m²</label><input id="project_surface" value="${esc(selected.surface)}"></div>
+              <div class="form-row"><label>Budget HT</label><input id="project_budgetHT" value="${esc(selected.budgetHT)}" placeholder="0"></div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Architecte / cabinet</label><input id="project_architect" value="${esc(selected.architect)}"></div>
+              <div class="form-row"><label>Signataire ZAF BAT</label><input id="project_signedBy" value="${esc(selected.signedBy)}"></div>
+            </div>
+            <div class="form-row"><label>Adresse chantier</label><textarea id="project_address">${esc(selected.address)}</textarea></div>
+            <div class="form-row"><label>Conditions de démarrage</label><textarea id="project_startCondition">${esc(selected.startCondition)}</textarea></div>
+            <div class="form-row"><label>Notes internes</label><textarea id="project_notes">${esc(selected.notes)}</textarea></div>
+            <div class="info-grid">
+              <div class="muted-box"><div class="label">Référence</div><div class="value">${esc(selected.ref || "Brouillon")}</div></div>
+              <div class="muted-box"><div class="label">Client</div><div class="value">${esc(projectClient(selected)?.contactName || projectClient(selected)?.legalName || "Non lié")}</div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderQuoteLinesEditor() {
+    return APP.draft.quoteLines.map((line, index) => `
+      <div class="line-card">
+        <div class="topline">
+          <strong>Ligne ${index + 1}</strong>
+          <button class="btn btn-danger small" data-remove-quote-line="${esc(line.id)}">Retirer</button>
+        </div>
+        <div class="split-2" style="margin-top:12px">
+          <div class="form-row"><label>Désignation</label><input data-quote-line="${esc(line.id)}" data-field="description" value="${esc(line.description)}"></div>
+          <div class="form-row"><label>Unité</label><input data-quote-line="${esc(line.id)}" data-field="unit" value="${esc(line.unit)}"></div>
+        </div>
+        <div class="split-2">
+          <div class="form-row"><label>Quantité</label><input data-quote-line="${esc(line.id)}" data-field="qty" value="${esc(line.qty)}"></div>
+          <div class="form-row"><label>Prix unitaire HT</label><input data-quote-line="${esc(line.id)}" data-field="pu" value="${esc(line.pu)}"></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderSituationLinesEditor() {
+    return APP.draft.situationLines.map((line, index) => `
+      <div class="situation-card">
+        <div class="topline">
+          <strong>Poste ${index + 1}</strong>
+          <button class="btn btn-danger small" data-remove-situation-line="${esc(line.id)}">Retirer</button>
+        </div>
+        <div class="form-row" style="margin-top:12px"><label>Poste</label><input data-situation-line="${esc(line.id)}" data-field="post" value="${esc(line.post)}"></div>
+        <div class="split-3">
+          <div class="form-row"><label>Marché HT</label><input data-situation-line="${esc(line.id)}" data-field="market" value="${esc(line.market)}"></div>
+          <div class="form-row"><label>Cumul précédent</label><input data-situation-line="${esc(line.id)}" data-field="previous" value="${esc(line.previous)}"></div>
+          <div class="form-row"><label>Période</label><input data-situation-line="${esc(line.id)}" data-field="period" value="${esc(line.period)}"></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderReservesEditor() {
+    return APP.draft.reserves.map((row, index) => `
+      <div class="reserve-card">
+        <div class="topline">
+          <strong>Réserve ${index + 1}</strong>
+          <button class="btn btn-danger small" data-remove-reserve="${esc(row.id)}">Retirer</button>
+        </div>
+        <div class="form-row" style="margin-top:12px"><label>Réserve</label><input data-reserve-row="${esc(row.id)}" data-field="reserve" value="${esc(row.reserve)}"></div>
+        <div class="split-3">
+          <div class="form-row"><label>Localisation</label><input data-reserve-row="${esc(row.id)}" data-field="location" value="${esc(row.location)}"></div>
+          <div class="form-row"><label>Action</label><input data-reserve-row="${esc(row.id)}" data-field="action" value="${esc(row.action)}"></div>
+          <div class="form-row"><label>Délai</label><input data-reserve-row="${esc(row.id)}" data-field="delay" value="${esc(row.delay)}"></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderAuditEditor() {
+    return APP.draft.auditRows.map((row, index) => `
+      <div class="audit-card">
+        <div class="topline">
+          <strong>Constat ${index + 1}</strong>
+          <button class="btn btn-danger small" data-remove-audit-row="${esc(row.id)}">Retirer</button>
+        </div>
+        <div class="split-2" style="margin-top:12px">
+          <div class="form-row"><label>Zone</label><input data-audit-row="${esc(row.id)}" data-field="zone" value="${esc(row.zone)}"></div>
+          <div class="form-row"><label>Point</label><input data-audit-row="${esc(row.id)}" data-field="point" value="${esc(row.point)}"></div>
+        </div>
+        <div class="form-row"><label>Constat</label><input data-audit-row="${esc(row.id)}" data-field="constat" value="${esc(row.constat)}"></div>
+        <div class="split-3">
+          <div class="form-row"><label>Statut</label><select data-audit-row="${esc(row.id)}" data-field="status">
+            ${["Conforme", "À corriger", "Observation"].map(status => `<option value="${status}" ${row.status === status ? "selected" : ""}>${status}</option>`).join("")}
+          </select></div>
+          <div class="form-row"><label>Responsable</label><input data-audit-row="${esc(row.id)}" data-field="responsible" value="${esc(row.responsible)}"></div>
+          <div class="form-row"><label>Échéance</label><input data-audit-row="${esc(row.id)}" data-field="deadline" value="${esc(row.deadline)}"></div>
+        </div>
+        <div class="form-row"><label>Action corrective</label><input data-audit-row="${esc(row.id)}" data-field="action" value="${esc(row.action)}"></div>
+      </div>
+    `).join("");
+  }
+
+  function updateDraftFromInputs() {
+    APP.draft.type = qs("#draft_type")?.value || APP.draft.type;
+    APP.draft.projectId = qs("#draft_projectId")?.value || "";
+    APP.draft.title = qs("#draft_title")?.value || "";
+    APP.draft.validityDays = num(qs("#draft_validityDays")?.value, 15);
+    APP.draft.tva = num(qs("#draft_tva")?.value, 20);
+    APP.draft.discountPct = num(qs("#draft_discountPct")?.value, 0);
+    APP.draft.depositPct = num(qs("#draft_depositPct")?.value, 30);
+    APP.draft.delay = qs("#draft_delay")?.value || "";
+    APP.draft.startCondition = qs("#draft_startCondition")?.value || "";
+    APP.draft.paymentTerms = qs("#draft_paymentTerms")?.value || "";
+    APP.draft.specialNotes = qs("#draft_specialNotes")?.value || "";
+    APP.draft.signatory = qs("#draft_signatory")?.value || "";
+    APP.draft.changeDescription = qs("#draft_changeDescription")?.value || "";
+
+    qsa("[data-quote-line]").forEach(input => {
+      const line = APP.draft.quoteLines.find(item => item.id === input.dataset.quoteLine);
+      if (line) line[input.dataset.field] = ["qty", "pu"].includes(input.dataset.field) ? num(input.value) : input.value;
+    });
+    qsa("[data-situation-line]").forEach(input => {
+      const line = APP.draft.situationLines.find(item => item.id === input.dataset.situationLine);
+      if (line) line[input.dataset.field] = ["market", "previous", "period"].includes(input.dataset.field) ? num(input.value) : input.value;
+    });
+    qsa("[data-reserve-row]").forEach(input => {
+      const row = APP.draft.reserves.find(item => item.id === input.dataset.reserveRow);
+      if (row) row[input.dataset.field] = input.value;
+    });
+    qsa("[data-audit-row]").forEach(input => {
+      const row = APP.draft.auditRows.find(item => item.id === input.dataset.auditRow);
+      if (row) row[input.dataset.field] = input.value;
+    });
+
+    refreshPreview();
+  }
+
+  function buildDraftSnapshot(includeRef = false) {
+    const project = projectById(APP.draft.projectId);
+    const client = projectClient(project);
+    const snapshot = {
+      id: uid("doc"),
+      ref: includeRef ? generateRef(docPrefix(APP.draft.type)) : "APERÇU",
+      type: APP.draft.type,
+      title: APP.draft.title || defaultDocTitle(APP.draft.type),
+      createdAt: nowIso(),
+      project: deepClone(project),
+      client: deepClone(client),
+      validityDays: APP.draft.validityDays,
+      tva: APP.draft.tva,
+      discountPct: APP.draft.discountPct,
+      depositPct: APP.draft.depositPct,
+      delay: APP.draft.delay,
+      startCondition: APP.draft.startCondition,
+      paymentTerms: APP.draft.paymentTerms,
+      specialNotes: APP.draft.specialNotes,
+      signatory: APP.draft.signatory,
+      changeDescription: APP.draft.changeDescription,
+      quoteLines: deepClone(APP.draft.quoteLines),
+      situationLines: deepClone(APP.draft.situationLines),
+      reserves: deepClone(APP.draft.reserves),
+      auditRows: deepClone(APP.draft.auditRows)
+    };
+    snapshot.totals = totalsFromQuoteLines(snapshot.quoteLines || [], snapshot.discountPct, snapshot.tva);
+    snapshot.renderedHtml = renderDocumentHtml(snapshot);
+    return snapshot;
+  }
+
+  function docPrefix(type) {
+    return {
+      devis: "DEV",
+      contrat: "CTR",
+      avenant: "AV",
+      situation: "SIT",
+      pv: "PV",
+      audit: "AUD"
+    }[type] || "DOC";
+  }
+
+  function defaultDocTitle(type) {
+    return {
+      devis: "Devis client",
+      contrat: "Contrat de travaux",
+      avenant: "Avenant",
+      situation: "Situation de travaux",
+      pv: "PV de réception",
+      audit: "Audit chantier"
+    }[type] || "Document";
+  }
+
+  function refreshPreview() {
+    const snapshot = buildDraftSnapshot(false);
+    APP.previewHtml = snapshot.renderedHtml;
+    const frame = qs("#previewFrame");
+    if (frame) frame.srcdoc = APP.previewHtml;
+  }
+
+  function renderDocuments() {
+    const docsRows = APP.data.documents.length ? APP.data.documents.map(doc => {
+      const project = projectById(doc.projectId);
+      const client = clientById(doc.clientId);
+      return `<tr>
+        <td>${esc(doc.ref)}</td>
+        <td>${esc(defaultDocTitle(doc.type))}</td>
+        <td>${esc(project?.title || "—")}</td>
+        <td>${esc(client?.contactName || client?.legalName || "—")}</td>
+        <td>${humanDateTime(doc.createdAt)}</td>
+        <td>${statusBadge(doc.status)}</td>
+        <td>
+          <div class="inline-actions">
+            <button class="btn btn-secondary small" data-open-doc="${esc(doc.id)}">Voir</button>
+            <button class="btn btn-secondary small" data-duplicate-doc="${esc(doc.id)}">Dupliquer</button>
+            <button class="btn btn-secondary small" data-download-doc="${esc(doc.id)}">HTML</button>
+            <button class="btn btn-danger small" data-delete-doc="${esc(doc.id)}">Suppr.</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="7">Aucun document généré.</td></tr>`;
+
+    return `
+      <div class="preview-shell">
+        <section class="card pane">
+          <div class="topline">
+            <div class="section-title" style="margin:0"><div class="label">Studio documentaire</div></div>
+            <div class="inline-actions">
+              <button class="btn btn-secondary small" id="btnResetDraft">Réinitialiser</button>
+              <button class="btn btn-primary small" id="btnGenerateDocument">Générer & figer</button>
+            </div>
+          </div>
+          <div class="stack" style="margin-top:14px">
+            <div class="split-2">
+              <div class="form-row">
+                <label>Type document</label>
+                <select id="draft_type">
+                  ${[
+                    ["devis", "Devis"],
+                    ["contrat", "Contrat"],
+                    ["avenant", "Avenant"],
+                    ["situation", "Situation"],
+                    ["pv", "PV réception"],
+                    ["audit", "Audit"]
+                  ].map(([value, label]) => `<option value="${value}" ${APP.draft.type === value ? "selected" : ""}>${label}</option>`).join("")}
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Projet</label>
+                <select id="draft_projectId">
+                  ${APP.data.projects.map(project => `<option value="${esc(project.id)}" ${APP.draft.projectId === project.id ? "selected" : ""}>${esc(project.title || project.ref)}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Titre interne</label><input id="draft_title" value="${esc(APP.draft.title)}" placeholder="Optionnel"></div>
+              <div class="form-row"><label>Signataire ZAF BAT</label><input id="draft_signatory" value="${esc(APP.draft.signatory)}"></div>
+            </div>
+            <div class="split-3">
+              <div class="form-row"><label>Validité jours</label><input id="draft_validityDays" value="${esc(APP.draft.validityDays)}"></div>
+              <div class="form-row"><label>TVA %</label><input id="draft_tva" value="${esc(APP.draft.tva)}"></div>
+              <div class="form-row"><label>Acompte %</label><input id="draft_depositPct" value="${esc(APP.draft.depositPct)}"></div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Remise %</label><input id="draft_discountPct" value="${esc(APP.draft.discountPct)}"></div>
+              <div class="form-row"><label>Délai / impact</label><input id="draft_delay" value="${esc(APP.draft.delay)}"></div>
+            </div>
+            <div class="form-row"><label>Condition de démarrage</label><textarea id="draft_startCondition">${esc(APP.draft.startCondition)}</textarea></div>
+            <div class="form-row"><label>Modalités de paiement</label><textarea id="draft_paymentTerms">${esc(APP.draft.paymentTerms)}</textarea></div>
+            <div class="form-row"><label>Description modification (avenant)</label><textarea id="draft_changeDescription">${esc(APP.draft.changeDescription)}</textarea></div>
+            <div class="form-row"><label>Notes / synthèse</label><textarea id="draft_specialNotes">${esc(APP.draft.specialNotes)}</textarea></div>
+
+            <div id="draftDynamicPanel">
+              ${renderDraftDynamicPanel()}
+            </div>
+          </div>
+          <div class="doc-toolbar">
+            <button class="btn btn-secondary small" id="btnRefreshPreview">Actualiser aperçu</button>
+            <button class="btn btn-secondary small" id="btnPrintPreview">Imprimer / PDF</button>
+            <button class="btn btn-secondary small" id="btnDownloadPreviewHtml">Télécharger l’aperçu HTML</button>
+          </div>
+          <div class="helper" style="margin-top:10px">Les documents générés sont figés comme snapshots. Cela crée une traçabilité propre et évite qu’un devis signé soit modifié en silence après émission.</div>
+        </section>
+
+        <section class="card pane">
+          <div class="section-title"><div class="label">Aperçu client</div></div>
+          <iframe id="previewFrame" class="preview-frame" title="Aperçu documentaire"></iframe>
+        </section>
+      </div>
+
+      <section class="card pane" style="margin-top:16px">
+        <div class="section-title"><div class="label">Registre documentaire</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Référence</th><th>Type</th><th>Projet</th><th>Client</th><th>Créé le</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>${docsRows}</tbody>
+          </table>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderDraftDynamicPanel() {
+    const type = APP.draft.type;
+    if (["devis", "contrat", "avenant"].includes(type)) {
+      const totals = totalsFromQuoteLines(APP.draft.quoteLines, APP.draft.discountPct, APP.draft.tva);
+      return `
+        <div class="section-title"><div class="label">Lignes financières</div></div>
+        <div class="lines-editor">${renderQuoteLinesEditor()}</div>
+        <div class="doc-toolbar">
+          <button class="btn btn-secondary small" id="btnAddQuoteLine">Ajouter une ligne</button>
+        </div>
+        <div class="summary-bar" style="margin-top:10px">
+          <div><div class="helper">HT brut</div><div style="font-weight:700">${money(totals.gross)}</div></div>
+          <div><div class="helper">Remise</div><div style="font-weight:700">${money(totals.discount)}</div></div>
+          <div><div class="helper">Net HT</div><div style="font-weight:700">${money(totals.net)}</div></div>
+          <div><div class="helper">Total TTC</div><div class="big">${money(totals.total)}</div></div>
+        </div>`;
+    }
+    if (type === "situation") {
+      const totals = situationTotals(APP.draft.situationLines);
+      return `
+        <div class="section-title"><div class="label">Postes d’avancement</div></div>
+        <div class="situation-editor">${renderSituationLinesEditor()}</div>
+        <div class="doc-toolbar"><button class="btn btn-secondary small" id="btnAddSituationLine">Ajouter un poste</button></div>
+        <div class="summary-bar" style="margin-top:10px">
+          <div><div class="helper">Marché</div><div style="font-weight:700">${money(totals.market)}</div></div>
+          <div><div class="helper">Précédent</div><div style="font-weight:700">${money(totals.previous)}</div></div>
+          <div><div class="helper">Période</div><div style="font-weight:700">${money(totals.period)}</div></div>
+          <div><div class="helper">Cumul</div><div class="big">${money(totals.cumulative)}</div></div>
+        </div>`;
+    }
+    if (type === "pv") {
+      return `
+        <div class="section-title"><div class="label">Réserves</div></div>
+        <div class="reserves-editor">${renderReservesEditor()}</div>
+        <div class="doc-toolbar"><button class="btn btn-secondary small" id="btnAddReserve">Ajouter une réserve</button></div>`;
+    }
+    return `
+      <div class="section-title"><div class="label">Constats d’audit</div></div>
+      <div class="audit-editor">${renderAuditEditor()}</div>
+      <div class="doc-toolbar"><button class="btn btn-secondary small" id="btnAddAuditRow">Ajouter un constat</button></div>`;
+  }
+
+  function renderSettings() {
+    return `
+      <div class="grid-main">
+        <section class="card pane">
+          <div class="section-title"><div class="label">Profil société</div></div>
+          <div class="stack">
+            <div class="split-2">
+              <div class="form-row"><label>Nom société</label><input id="settings_companyName" value="${esc(APP.data.company.name)}"></div>
+              <div class="form-row"><label>Signataire principal</label><input id="settings_primarySignatory" value="${esc(APP.data.company.primarySignatory)}"></div>
+            </div>
+            <div class="split-2">
+              <div class="form-row"><label>Email</label><input id="settings_email" value="${esc(APP.data.company.email)}"></div>
+              <div class="form-row"><label>Téléphone</label><input id="settings_phone" value="${esc(APP.data.company.phone)}"></div>
+            </div>
+            <div class="form-row"><label>Adresse</label><textarea id="settings_address">${esc(APP.data.company.address)}</textarea></div>
+            <div class="form-row"><label>Footer documentaire</label><textarea id="settings_legalFooter">${esc(APP.data.company.legalFooter)}</textarea></div>
+            <button class="btn btn-secondary" id="btnSaveSettings">Enregistrer le profil</button>
+          </div>
+        </section>
+        <section class="card pane">
+          <div class="section-title"><div class="label">Vault & sécurité locale</div></div>
+          <div class="stack">
+            <div class="muted-box">
+              <div class="label">État actuel</div>
+              <div class="value">Coffre local chiffré · dernière mise à jour ${humanDateTime(APP.vaultMeta?.updatedAt)}</div>
+            </div>
+            <div class="split-2">
+              <div class="form-row">
+                <label>Auto-lock (minutes)</label>
+                <input id="settings_autoLockMinutes" value="${esc(APP.autoLockMinutes)}">
+              </div>
+              <div class="form-row">
+                <label>Lock à la mise en arrière-plan</label>
+                <select id="settings_lockOnHidden">
+                  <option value="true" ${APP.data.settings.lockOnHidden ? "selected" : ""}>Oui</option>
+                  <option value="false" ${!APP.data.settings.lockOnHidden ? "selected" : ""}>Non</option>
+                </select>
+              </div>
+            </div>
+            <div class="auth-actions">
+              <button class="btn btn-secondary" id="btnSaveSecuritySettings">Enregistrer sécurité</button>
+              <button class="btn btn-secondary" id="btnExportBackup">Exporter backup chiffré</button>
+              <label class="btn btn-secondary" for="importBackupInput" style="cursor:pointer">Importer backup chiffré</label>
+              <input id="importBackupInput" type="file" accept=".json,application/json" class="hidden">
+            </div>
+            <hr class="sep">
+            <div style="font-size:18px;font-weight:600">Rotation de phrase secrète</div>
+            <div class="split-2">
+              <div class="form-row"><label>Nouvelle phrase secrète</label><input type="password" id="settings_newPass1" placeholder="Minimum 10 caractères"></div>
+              <div class="form-row"><label>Confirmer</label><input type="password" id="settings_newPass2" placeholder="Répéter"></div>
+            </div>
+            <button class="btn btn-secondary" id="btnRotatePassphrase">Changer la phrase secrète</button>
+            <div class="helper">Pour une vraie sécurité d’entreprise, il faudra un backend, une authentification serveur et un stockage chiffré côté infrastructure. Cette version reste excellente pour un usage interne mono-poste ou mono-dirigeant sur GitHub Pages.</div>
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function render() {
+    if (!APP.data) return;
+    updateCounters();
+    const config = {
+      overview: ["Pilotage", "Vue générale", "KPIs, activité récente, registre des flux structurants"],
+      clients: ["Base métier", "Clients", "Dossier client, segmentation, contact principal et preuve commerciale"],
+      projects: ["Base métier", "Projets", "Pilotage chantier, conditions de démarrage, budget et signataire"],
+      documents: ["Contrôle", "Documents", "Studio documentaire, génération figée, export HTML/PDF"],
+      settings: ["Vault", "Paramètres", "Profil société, sauvegarde chiffrée et sécurité locale"]
+    }[APP.view];
+
+    qs("#viewEyebrow").textContent = config[0];
+    qs("#viewTitle").textContent = config[1];
+    qs("#viewSub").textContent = config[2];
+
+    qsa(".nav-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.view === APP.view));
+
+    const content = qs("#appContent");
+    if (APP.view === "overview") content.innerHTML = renderOverview();
+    if (APP.view === "clients") content.innerHTML = renderClients();
+    if (APP.view === "projects") content.innerHTML = renderProjects();
+    if (APP.view === "documents") content.innerHTML = renderDocuments();
+    if (APP.view === "settings") content.innerHTML = renderSettings();
+
+    bindViewEvents();
+    if (APP.view === "documents") refreshPreview();
+  }
+
+  function saveClient() {
+    const target = clientById(APP.selectedClientId) || baseClient();
+    target.type = qs("#client_type").value;
+    target.status = qs("#client_status").value;
+    target.legalName = qs("#client_legalName").value.trim();
+    target.contactName = qs("#client_contactName").value.trim();
+    target.email = qs("#client_email").value.trim();
+    target.phone = qs("#client_phone").value.trim();
+    target.city = qs("#client_city").value.trim();
+    target.taxId = qs("#client_taxId").value.trim();
+    target.address = qs("#client_address").value.trim();
+    target.notes = qs("#client_notes").value.trim();
+    target.updatedAt = nowIso();
+
+    if (!target.contactName && !target.legalName) {
+      toast("Un client doit avoir au moins un nom.", "error");
+      return;
+    }
+    if (!clientById(target.id)) APP.data.clients.unshift(target);
+    APP.selectedClientId = target.id;
+    addActivity("Client enregistré", "client", `${target.contactName || target.legalName} a été enregistré.`);
+    persist().then(() => {
+      render();
+      toast("Client enregistré.");
+    });
+  }
+
+  function deleteClient() {
+    const target = clientById(APP.selectedClientId);
+    if (!target) return;
+    const linkedProjects = APP.data.projects.filter(project => project.clientId === target.id);
+    if (linkedProjects.length) {
+      toast("Supprimez ou reliez d’abord les projets de ce client.", "error");
+      return;
+    }
+    showConfirm({
+      title: "Supprimer le client",
+      body: "Cette action retirera définitivement le client du coffre local.",
+      onConfirm: () => {
+        APP.data.clients = APP.data.clients.filter(client => client.id !== target.id);
+        APP.selectedClientId = APP.data.clients[0]?.id || null;
+        addActivity("Client supprimé", "client", `${target.contactName || target.legalName} a été supprimé.`);
+        persist().then(() => {
+          render();
+          toast("Client supprimé.");
+        });
+      }
+    });
+  }
+
+  function saveProject() {
+    const target = projectById(APP.selectedProjectId) || baseProject();
+    target.clientId = qs("#project_clientId").value;
+    target.status = qs("#project_status").value;
+    target.title = qs("#project_title").value.trim();
+    target.category = qs("#project_category").value.trim();
+    target.city = qs("#project_city").value.trim();
+    target.surface = qs("#project_surface").value.trim();
+    target.budgetHT = qs("#project_budgetHT").value.trim();
+    target.architect = qs("#project_architect").value.trim();
+    target.signedBy = qs("#project_signedBy").value.trim();
+    target.address = qs("#project_address").value.trim();
+    target.startCondition = qs("#project_startCondition").value.trim();
+    target.notes = qs("#project_notes").value.trim();
+    target.updatedAt = nowIso();
+
+    if (!target.title) {
+      toast("Un projet doit avoir un titre.", "error");
+      return;
+    }
+    if (!clientById(target.clientId)) {
+      toast("Lie le projet à un client avant de l’enregistrer.", "error");
+      return;
+    }
+    if (!projectById(target.id)) APP.data.projects.unshift(target);
+    APP.selectedProjectId = target.id;
+    if (!APP.draft.projectId) APP.draft.projectId = target.id;
+    addActivity("Projet enregistré", "projet", `${target.title} a été enregistré.`);
+    persist().then(() => {
+      render();
+      toast("Projet enregistré.");
+    });
+  }
+
+  function deleteProject() {
+    const target = projectById(APP.selectedProjectId);
+    if (!target) return;
+    const linkedDocs = APP.data.documents.filter(doc => doc.projectId === target.id);
+    if (linkedDocs.length) {
+      toast("Supprimez d’abord les documents liés à ce projet.", "error");
+      return;
+    }
+    showConfirm({
+      title: "Supprimer le projet",
+      body: "Cette action retirera le projet du coffre local.",
+      onConfirm: () => {
+        APP.data.projects = APP.data.projects.filter(project => project.id !== target.id);
+        APP.selectedProjectId = APP.data.projects[0]?.id || null;
+        if (APP.draft.projectId === target.id) APP.draft.projectId = APP.data.projects[0]?.id || "";
+        addActivity("Projet supprimé", "projet", `${target.title} a été supprimé.`);
+        persist().then(() => {
+          render();
+          toast("Projet supprimé.");
+        });
+      }
+    });
+  }
+
+  function resetDraft(projectId = "") {
+    APP.draft = baseDraft();
+    if (projectId) APP.draft.projectId = projectId;
+    if (!APP.draft.projectId) APP.draft.projectId = APP.data.projects[0]?.id || "";
+  }
+
+  function generateDocument() {
+    updateDraftFromInputs();
+    const project = projectById(APP.draft.projectId);
+    const client = projectClient(project);
+    if (!project || !client) {
+      toast("Sélectionne un projet correctement lié à un client.", "error");
+      return;
+    }
+    const snapshot = buildDraftSnapshot(true);
+    const doc = {
+      id: snapshot.id,
+      ref: snapshot.ref,
+      type: snapshot.type,
+      title: snapshot.title,
+      projectId: project.id,
+      clientId: client.id,
+      status: "genere",
+      createdAt: snapshot.createdAt,
+      updatedAt: snapshot.createdAt,
+      snapshot
+    };
+    APP.data.documents.unshift(doc);
+    APP.selectedDocumentId = doc.id;
+    addActivity("Document généré", "document", `${doc.ref} · ${defaultDocTitle(doc.type)} pour ${project.title}.`);
+    persist().then(() => {
+      render();
+      toast(`Document ${doc.ref} généré.`);
+    });
+  }
+
+  function openDocument(docId) {
+    const doc = docById(docId);
+    if (!doc) return;
+    APP.view = "documents";
+    APP.previewHtml = doc.snapshot.renderedHtml;
+    APP.selectedDocumentId = doc.id;
+    render();
+    const frame = qs("#previewFrame");
+    if (frame) frame.srcdoc = doc.snapshot.renderedHtml;
+  }
+
+  function duplicateDocumentToDraft(docId) {
+    const doc = docById(docId);
+    if (!doc) return;
+    APP.draft = deepClone({
+      type: doc.snapshot.type,
+      projectId: doc.projectId,
+      title: doc.snapshot.title,
+      validityDays: doc.snapshot.validityDays,
+      tva: doc.snapshot.tva,
+      discountPct: doc.snapshot.discountPct,
+      depositPct: doc.snapshot.depositPct,
+      delay: doc.snapshot.delay,
+      startCondition: doc.snapshot.startCondition,
+      paymentTerms: doc.snapshot.paymentTerms,
+      specialNotes: doc.snapshot.specialNotes,
+      signatory: doc.snapshot.signatory,
+      changeDescription: doc.snapshot.changeDescription,
+      quoteLines: doc.snapshot.quoteLines || [],
+      situationLines: doc.snapshot.situationLines || [],
+      reserves: doc.snapshot.reserves || [],
+      auditRows: doc.snapshot.auditRows || []
+    });
+    APP.selectedDocumentId = doc.id;
+    APP.view = "documents";
+    render();
+    toast(`Brouillon rechargé depuis ${doc.ref}.`);
+  }
+
+  function deleteDocument(docId) {
+    const doc = docById(docId);
+    if (!doc) return;
+    showConfirm({
+      title: "Supprimer le document",
+      body: `Le document ${doc.ref} sera retiré du coffre local.`,
+      onConfirm: () => {
+        APP.data.documents = APP.data.documents.filter(item => item.id !== docId);
+        APP.selectedDocumentId = APP.data.documents[0]?.id || null;
+        addActivity("Document supprimé", "document", `${doc.ref} a été supprimé.`);
+        persist().then(() => {
+          render();
+          toast("Document supprimé.");
+        });
+      }
+    });
+  }
+
+  function printHtml(html) {
+    const w = window.open("", "_blank", "noopener,noreferrer,width=1100,height=900");
+    if (!w) {
+      toast("Autorise les popups pour imprimer le document.", "error");
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => { w.focus(); w.print(); }, 250);
+  }
+
+  function saveSettings() {
+    APP.data.company.name = qs("#settings_companyName").value.trim() || APP.data.company.name;
+    APP.data.company.primarySignatory = qs("#settings_primarySignatory").value.trim() || APP.data.company.primarySignatory;
+    APP.data.company.email = qs("#settings_email").value.trim();
+    APP.data.company.phone = qs("#settings_phone").value.trim();
+    APP.data.company.address = qs("#settings_address").value.trim();
+    APP.data.company.legalFooter = qs("#settings_legalFooter").value.trim();
+    addActivity("Profil société mis à jour", "settings", "Le profil documentaire de l’entreprise a été mis à jour.");
+    persist().then(() => {
+      render();
+      toast("Profil société enregistré.");
+    });
+  }
+
+  function saveSecuritySettings() {
+    APP.autoLockMinutes = Math.max(1, num(qs("#settings_autoLockMinutes").value, 15));
+    APP.data.settings.autoLockMinutes = APP.autoLockMinutes;
+    APP.data.settings.lockOnHidden = qs("#settings_lockOnHidden").value === "true";
+    persist().then(() => {
+      armInactivityLock();
+      render();
+      toast("Réglages sécurité enregistrés.");
+    });
+  }
+
+  async function rotatePassphrase() {
+    const pass1 = qs("#settings_newPass1").value;
+    const pass2 = qs("#settings_newPass2").value;
+    if (pass1.length < 10) {
+      toast("La nouvelle phrase secrète doit contenir au moins 10 caractères.", "error");
+      return;
+    }
+    if (pass1 !== pass2) {
+      toast("Les nouvelles phrases secrètes ne correspondent pas.", "error");
+      return;
+    }
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    APP.key = await deriveKey(pass1, salt);
+    APP.vaultMeta = { salt: arrayBufferToBase64(salt) };
+    await persist();
+    qs("#settings_newPass1").value = "";
+    qs("#settings_newPass2").value = "";
+    toast("Phrase secrète remplacée.");
+  }
+
+  function exportBackup() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      toast("Aucun coffre à exporter.", "error");
+      return;
+    }
+    downloadFile(`zafbat-vault-${today()}.json`, raw, "application/json;charset=utf-8");
+    toast("Backup chiffré exporté.");
+  }
+
+  function importBackup(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        JSON.parse(String(reader.result));
+        localStorage.setItem(STORAGE_KEY, String(reader.result));
+        lockSession("Backup importé. Déverrouille le nouveau coffre.");
+      } catch (error) {
+        toast("Backup invalide.", "error");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function bindViewEvents() {
+    qsa("[data-select-client]").forEach(btn => btn.onclick = () => {
+      APP.selectedClientId = btn.dataset.selectClient;
+      render();
+    });
+    qsa("[data-select-project]").forEach(btn => btn.onclick = () => {
+      APP.selectedProjectId = btn.dataset.selectProject;
+      render();
+    });
+
+    qs("#btnNewClient")?.addEventListener("click", () => {
+      const fresh = baseClient();
+      APP.data.clients.unshift(fresh);
+      APP.selectedClientId = fresh.id;
+      render();
+    });
+    qs("#btnSaveClient")?.addEventListener("click", saveClient);
+    qs("#btnDeleteClient")?.addEventListener("click", deleteClient);
+
+    qs("#btnNewProject")?.addEventListener("click", () => {
+      const fresh = baseProject(APP.selectedClientId);
+      APP.data.projects.unshift(fresh);
+      APP.selectedProjectId = fresh.id;
+      render();
+    });
+    qs("#btnSaveProject")?.addEventListener("click", saveProject);
+    qs("#btnDeleteProject")?.addEventListener("click", deleteProject);
+
+    qsa("#draft_type,#draft_projectId,#draft_title,#draft_validityDays,#draft_tva,#draft_discountPct,#draft_depositPct,#draft_delay,#draft_startCondition,#draft_paymentTerms,#draft_specialNotes,#draft_signatory,#draft_changeDescription")
+      .forEach(input => input.addEventListener("input", () => {
+        updateDraftFromInputs();
+        if (input.id === "draft_type") render();
+      }));
+
+    qsa("[data-quote-line],[data-situation-line],[data-reserve-row],[data-audit-row]").forEach(input => {
+      input.addEventListener("input", updateDraftFromInputs);
+      input.addEventListener("change", updateDraftFromInputs);
+    });
+
+    qs("#btnAddQuoteLine")?.addEventListener("click", () => {
+      APP.draft.quoteLines.push({ id: uid("ql"), description: "Nouvelle ligne", unit: "forfait", qty: 1, pu: 0 });
+      render();
+    });
+    qsa("[data-remove-quote-line]").forEach(btn => btn.onclick = () => {
+      APP.draft.quoteLines = APP.draft.quoteLines.filter(line => line.id !== btn.dataset.removeQuoteLine);
+      if (!APP.draft.quoteLines.length) APP.draft.quoteLines.push({ id: uid("ql"), description: "Nouvelle ligne", unit: "forfait", qty: 1, pu: 0 });
+      render();
+    });
+
+    qs("#btnAddSituationLine")?.addEventListener("click", () => {
+      APP.draft.situationLines.push({ id: uid("sl"), post: "Nouveau poste", market: 0, previous: 0, period: 0 });
+      render();
+    });
+    qsa("[data-remove-situation-line]").forEach(btn => btn.onclick = () => {
+      APP.draft.situationLines = APP.draft.situationLines.filter(line => line.id !== btn.dataset.removeSituationLine);
+      if (!APP.draft.situationLines.length) APP.draft.situationLines.push({ id: uid("sl"), post: "Nouveau poste", market: 0, previous: 0, period: 0 });
+      render();
+    });
+
+    qs("#btnAddReserve")?.addEventListener("click", () => {
+      APP.draft.reserves.push({ id: uid("rv"), reserve: "", location: "", action: "", delay: "" });
+      render();
+    });
+    qsa("[data-remove-reserve]").forEach(btn => btn.onclick = () => {
+      APP.draft.reserves = APP.draft.reserves.filter(row => row.id !== btn.dataset.removeReserve);
+      render();
+    });
+
+    qs("#btnAddAuditRow")?.addEventListener("click", () => {
+      APP.draft.auditRows.push({ id: uid("ar"), zone: "", point: "", constat: "", status: "Observation", action: "", responsible: "ZAF BAT", deadline: today() });
+      render();
+    });
+    qsa("[data-remove-audit-row]").forEach(btn => btn.onclick = () => {
+      APP.draft.auditRows = APP.draft.auditRows.filter(row => row.id !== btn.dataset.removeAuditRow);
+      if (!APP.draft.auditRows.length) APP.draft.auditRows.push({ id: uid("ar"), zone: "", point: "", constat: "", status: "Observation", action: "", responsible: "ZAF BAT", deadline: today() });
+      render();
+    });
+
+    qs("#btnRefreshPreview")?.addEventListener("click", updateDraftFromInputs);
+    qs("#btnPrintPreview")?.addEventListener("click", () => {
+      updateDraftFromInputs();
+      printHtml(APP.previewHtml);
+    });
+    qs("#btnDownloadPreviewHtml")?.addEventListener("click", () => {
+      updateDraftFromInputs();
+      downloadFile(`zafbat-${slug(defaultDocTitle(APP.draft.type))}-preview.html`, APP.previewHtml);
+    });
+    qs("#btnGenerateDocument")?.addEventListener("click", generateDocument);
+    qs("#btnResetDraft")?.addEventListener("click", () => {
+      resetDraft(APP.draft.projectId);
+      render();
+      toast("Brouillon réinitialisé.");
+    });
+
+    qsa("[data-open-doc]").forEach(btn => btn.onclick = () => openDocument(btn.dataset.openDoc));
+    qsa("[data-duplicate-doc]").forEach(btn => btn.onclick = () => duplicateDocumentToDraft(btn.dataset.duplicateDoc));
+    qsa("[data-download-doc]").forEach(btn => btn.onclick = () => {
+      const doc = docById(btn.dataset.downloadDoc);
+      if (doc) downloadFile(`${doc.ref}.html`, doc.snapshot.renderedHtml);
+    });
+    qsa("[data-delete-doc]").forEach(btn => btn.onclick = () => deleteDocument(btn.dataset.deleteDoc));
+
+    qs("#btnSaveSettings")?.addEventListener("click", saveSettings);
+    qs("#btnSaveSecuritySettings")?.addEventListener("click", saveSecuritySettings);
+    qs("#btnRotatePassphrase")?.addEventListener("click", rotatePassphrase);
+    qs("#btnExportBackup")?.addEventListener("click", exportBackup);
+    qs("#importBackupInput")?.addEventListener("change", ev => importBackup(ev.target.files?.[0]));
+  }
+
+  function attachGlobalEvents() {
+    qs("#btnCreateVault").addEventListener("click", createVault);
+    qs("#btnUnlockVault").addEventListener("click", unlockVault);
+    qs("#btnResetVault").addEventListener("click", () => {
+      showConfirm({
+        title: "Réinitialiser le coffre",
+        body: "Cette action effacera le coffre local chiffré actuel de ce navigateur.",
+        onConfirm: () => {
+          localStorage.removeItem(STORAGE_KEY);
+          bootAuthView();
+          closeConfirm();
+          toast("Coffre local réinitialisé.");
+        }
+      });
+    });
+    qsa(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
+      APP.view = btn.dataset.view;
+      render();
+    }));
+    qs("#btnLockNow").addEventListener("click", () => lockSession());
+    qs("#btnQuickNewClient").addEventListener("click", () => {
+      APP.view = "clients";
+      const fresh = baseClient();
+      APP.data.clients.unshift(fresh);
+      APP.selectedClientId = fresh.id;
+      render();
+    });
+    qs("#btnQuickNewProject").addEventListener("click", () => {
+      APP.view = "projects";
+      const fresh = baseProject(APP.selectedClientId);
+      APP.data.projects.unshift(fresh);
+      APP.selectedProjectId = fresh.id;
+      render();
+    });
+    qs("#btnQuickOpenDocs").addEventListener("click", () => {
+      APP.view = "documents";
+      if (!APP.draft) resetDraft(APP.selectedProjectId);
+      render();
+    });
+    qs("#btnMobileMenu").addEventListener("click", () => qs("#sidebar").classList.toggle("show"));
+    qs("#btnToggleSidebar").addEventListener("click", () => qs("#sidebar").classList.remove("show"));
+    qs("#confirmCancel").addEventListener("click", closeConfirm);
+    qs("#confirmOk").addEventListener("click", () => {
+      const handler = APP.confirmHandler;
+      closeConfirm();
+      if (handler) handler();
+    });
+  }
+
+  attachGlobalEvents();
+  bootAuthView();
+})();
+</script>
+</body>
+</html>
