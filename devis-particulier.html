@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../styles/zafbat-docs.css">
+<title>{{document.reference}}</title>
+</head>
+<body>
+<div class="doc-page">
+
+  <div class="doc-head">
+    <div>
+      <div class="doc-brand">ZAF BAT</div>
+      <div class="doc-note">Proposition de travaux premium</div>
+    </div>
+    <div class="doc-box">
+      <strong>DEVIS</strong><br>
+      Référence : {{document.reference}}<br>
+      Date : {{document.date}}<br>
+      Validité : {{commercial.validite_jours}} jours
+    </div>
+  </div>
+  <h1>{{projet.nom}}</h1>
+  <div class="doc-grid">
+    <div class="doc-box"><strong>Client</strong><br>{{client.nom}}<br>{{client.adresse}}<br>{{client.telephone}} · {{client.email}}</div>
+    <div class="doc-box"><strong>Projet</strong><br>{{projet.adresse}}<br>{{projet.description}}<br>Usage : {{projet.usage}}</div>
+  </div>
+  <h2>Introduction</h2>
+  <p>ZAF BAT attache une importance particulière à la clarté des engagements, à la qualité d'exécution et à la bonne coordination du projet. Le présent document définit les prestations prévues, leurs limites, leurs conditions d'exécution et les modalités de collaboration.</p>
+  <h2>Prestations comprises</h2>
+  <ul>{{INCLUSIONS_ITEMS_HTML}}</ul>
+  <h2>Prestations non comprises</h2>
+  <ul>{{EXCLUSIONS_ITEMS_HTML}}</ul>
+  <h2>Hypothèses de base</h2>
+  <ul>{{HYPOTHESES_ITEMS_HTML}}</ul>
+  <h2>Chiffrage</h2>
+  <table class="doc-table"><thead><tr><th>Désignation</th><th>Unité</th><th>Qté</th><th>PU</th><th>Total</th></tr></thead><tbody>{{CHIFFRAGE_ROWS_HTML}}</tbody></table>
+  <div class="doc-grid" style="margin-top:14px">
+    <div class="doc-box"><strong>Total HT</strong><br>{{chiffrage.montant_ht}}</div>
+    <div class="doc-box"><strong>Total TTC</strong><br>{{chiffrage.montant_ttc}}</div>
+  </div>
+  <h2>Conditions de démarrage et délai</h2>
+  <p>Le démarrage effectif est prévu après réception du devis signé, de l'acompte convenu, et des éléments techniques ou choix nécessaires au lancement des travaux.</p>
+  <p>Délai prévisionnel : <strong>{{commercial.delai_execution}}</strong></p>
+  <h2>Échéancier</h2>
+  <table class="doc-table"><thead><tr><th>Jalon</th><th>Montant</th></tr></thead><tbody>{{JALONS_ROWS_HTML}}</tbody></table>
+  <div class="signature-grid">
+    <div class="signature-box"><strong>Pour ZAF BAT</strong><br>{{signataires.societe.nom}}<br>{{signataires.societe.fonction}}</div>
+    <div class="signature-box"><strong>Bon pour accord</strong><br>{{signataires.client.nom}}<br>{{signataires.client.fonction}}</div>
+  </div>
+
+</div>
+</body>
+</html>

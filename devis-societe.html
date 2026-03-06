@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../styles/zafbat-docs.css">
+<title>{{document.reference}}</title>
+</head>
+<body>
+<div class="doc-page">
+
+  <div class="doc-head">
+    <div><div class="doc-brand">ZAF BAT</div><div class="doc-note">Offre commerciale entre professionnels</div></div>
+    <div class="doc-box"><strong>OFFRE / DEVIS</strong><br>Référence : {{document.reference}}<br>Date : {{document.date}}</div>
+  </div>
+  <h1>{{projet.nom}}</h1>
+  <div class="doc-grid">
+    <div class="doc-box"><strong>Donneur d'ordre</strong><br>{{client.nom}}<br>{{client.adresse}}</div>
+    <div class="doc-box"><strong>Projet</strong><br>{{projet.adresse}}<br>{{projet.description}}</div>
+  </div>
+  <h2>Périmètre chiffré</h2>
+  <p>La présente offre ne couvre que les prestations expressément décrites. Toute prestation connexe, adaptation de support, mise au point technique complémentaire ou modification demandée en cours de projet fera l'objet d'une régularisation sur coût et délai avant exécution.</p>
+  <ul>{{INCLUSIONS_ITEMS_HTML}}</ul>
+  <h2>Exclusions / hypothèses</h2>
+  <ul>{{EXCLUSIONS_ITEMS_HTML}}</ul>
+  <ul>{{HYPOTHESES_ITEMS_HTML}}</ul>
+  <h2>Chiffrage</h2>
+  <table class="doc-table"><thead><tr><th>Désignation</th><th>Unité</th><th>Qté</th><th>PU</th><th>Total</th></tr></thead><tbody>{{CHIFFRAGE_ROWS_HTML}}</tbody></table>
+  <h2>Conditions</h2>
+  <p>Le délai prévisionnel ne court qu'à compter de la levée complète des prérequis de démarrage et reste révisable à hauteur de l'impact des validations, instructions, sujétions et aléas d'approvisionnement.</p>
+  <table class="doc-table"><thead><tr><th>Jalon</th><th>Montant</th></tr></thead><tbody>{{JALONS_ROWS_HTML}}</tbody></table>
+  <div class="signature-grid"><div class="signature-box"><strong>Pour ZAF BAT</strong><br>{{signataires.societe.nom}}</div><div class="signature-box"><strong>Pour le donneur d'ordre</strong><br>{{signataires.client.nom}}</div></div>
+
+</div>
+</body>
+</html>

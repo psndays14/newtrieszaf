@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../styles/zafbat-docs.css">
+<title>{{document.reference}}</title>
+</head>
+<body>
+<div class="doc-page">
+
+  <div class="doc-head"><div><div class="doc-brand">ZAF BAT</div><div class="doc-note">Contrat / marché privé</div></div><div class="doc-box"><strong>CONTRAT</strong><br>Référence : {{document.reference}}<br>Date : {{document.date}}</div></div>
+  <h1>{{projet.nom}}</h1>
+  <div class="doc-grid"><div class="doc-box"><strong>Donneur d'ordre</strong><br>{{client.nom}}<br>{{client.adresse}}</div><div class="doc-box"><strong>Projet</strong><br>{{projet.adresse}}<br>{{projet.description}}</div></div>
+  <h2>Préambule</h2><p>Les parties conviennent que la bonne exécution du projet suppose une coordination active, des validations dans les délais utiles et une formalisation rigoureuse des modifications.</p>
+  <h2>Hiérarchie documentaire</h2><p>Aucun échange informel ou instruction isolée non régularisée ne peut modifier le prix, le délai ou l'étendue des obligations sans accord exprès.</p>
+  <h2>Prestations couvertes</h2><ul>{{INCLUSIONS_ITEMS_HTML}}</ul>
+  <h2>Exclusions et hypothèses</h2><ul>{{EXCLUSIONS_ITEMS_HTML}}</ul><ul>{{HYPOTHESES_ITEMS_HTML}}</ul>
+  <h2>Prix et jalons</h2><div class="doc-grid"><div class="doc-box"><strong>Total HT</strong><br>{{chiffrage.montant_ht}}</div><div class="doc-box"><strong>Total TTC</strong><br>{{chiffrage.montant_ttc}}</div></div><table class="doc-table"><thead><tr><th>Jalon</th><th>Montant</th></tr></thead><tbody>{{JALONS_ROWS_HTML}}</tbody></table>
+  <h2>Délais et suspension</h2><p>Le délai contractuel ne court qu'à compter de l'encaissement de l'acompte, de la disponibilité effective des zones d'intervention, de la transmission des plans et validations nécessaires et de la levée des contraintes connues de démarrage.</p>
+  <div class="signature-grid"><div class="signature-box"><strong>Pour ZAF BAT</strong><br>{{signataires.societe.nom}}</div><div class="signature-box"><strong>Pour le donneur d'ordre</strong><br>{{signataires.client.nom}}</div></div>
+
+</div>
+</body>
+</html>
